@@ -1,6 +1,6 @@
 ﻿namespace BasicCad
 {
-    partial class BasicCad
+    partial class BasicCad_Form
     {
         /// <summary>
         /// Required designer variable.

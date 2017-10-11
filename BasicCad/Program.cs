@@ -16,7 +16,7 @@ namespace BasicCad
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new BasicCad());
+            Application.Run(new BasicCad_Form());
         }
     }
 }
