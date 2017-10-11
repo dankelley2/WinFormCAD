@@ -39,12 +39,14 @@ namespace BasicCad
 
         public void ZoomIn()
         {
-            gridScale += .25F;
+            if (gridScale < 10)
+                gridScale += .25F;
         }
 
         public void ZoomOut()
         {
-            gridScale -= .25F;
+            if (gridScale > .25F)
+                gridScale -= .25F;
         }
 
         public PointF realizePoint(PointF P)
