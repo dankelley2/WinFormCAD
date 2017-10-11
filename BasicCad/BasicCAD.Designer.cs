@@ -137,7 +137,7 @@
             this.ZoomIn.UseVisualStyleBackColor = false;
             this.ZoomIn.Click += new System.EventHandler(this.button2_Click);
             // 
-            // BasicCad
+            // BasicCad_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -149,7 +149,8 @@
             this.Controls.Add(this.Container_Control);
             this.MaximumSize = new System.Drawing.Size(1920, 1080);
             this.MinimumSize = new System.Drawing.Size(961, 950);
-            this.Name = "BasicCad";
+            this.Name = "BasicCad_Form";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "BasicCAD";
             this.Load += new System.EventHandler(this.BasicCad_Load);
             this.ResizeEnd += new System.EventHandler(this.BasicCad_ResizeEnd);
