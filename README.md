@@ -25,6 +25,12 @@ Right clicking the grid will move(snap) the cursor, and will ALSO Queue whatever
 -Right clicking the grid a SECOND time will draw a line between the previous point, and your current point, then empty the "ClickQueue"
 --Holding shift while right clicking will not empty the last point from the ClickQueue, to allow quick "path" creation.
 
+EXAMPLE Commands:
+"L 1.5 1 2 2"   -- diagonal line from (1.5" , 1") to (2", 2")
+"C;1.5;1.33333" -- Move cursor from current position to (1.5" , 1.33333") (with relative positioning on, will use that as a delta).
+"L 0 1"         -- With relative positioning on, will draw a line from the cursor and down one inch.
+
+
 
 TODO:
 -Dimensioning lines (optional)
