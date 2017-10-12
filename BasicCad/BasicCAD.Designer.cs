@@ -36,8 +36,11 @@
             this.txt_Console = new System.Windows.Forms.TextBox();
             this.ZoomOut = new System.Windows.Forms.Button();
             this.ZoomIn = new System.Windows.Forms.Button();
+            this.AdjustSnapDistance = new System.Windows.Forms.NumericUpDown();
+            this.ZoomScale = new System.Windows.Forms.TextBox();
             this.Container_Shapes.SuspendLayout();
             this.Container_Control.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AdjustSnapDistance)).BeginInit();
             this.SuspendLayout();
             // 
             // Container_Shapes
@@ -137,12 +140,58 @@
             this.ZoomIn.UseVisualStyleBackColor = false;
             this.ZoomIn.Click += new System.EventHandler(this.button2_Click);
             // 
+            // AdjustSnapDistance
+            // 
+            this.AdjustSnapDistance.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.AdjustSnapDistance.DecimalPlaces = 4;
+            this.AdjustSnapDistance.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AdjustSnapDistance.Increment = new decimal(new int[] {
+            625,
+            0,
+            0,
+            262144});
+            this.AdjustSnapDistance.Location = new System.Drawing.Point(763, 17);
+            this.AdjustSnapDistance.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.AdjustSnapDistance.Minimum = new decimal(new int[] {
+            625,
+            0,
+            0,
+            262144});
+            this.AdjustSnapDistance.Name = "AdjustSnapDistance";
+            this.AdjustSnapDistance.Size = new System.Drawing.Size(78, 26);
+            this.AdjustSnapDistance.TabIndex = 4;
+            this.AdjustSnapDistance.Value = new decimal(new int[] {
+            625,
+            0,
+            0,
+            262144});
+            this.AdjustSnapDistance.ValueChanged += new System.EventHandler(this.AdjustSnapDistance_ValueChanged);
+            // 
+            // ZoomScale
+            // 
+            this.ZoomScale.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ZoomScale.Location = new System.Drawing.Point(856, 51);
+            this.ZoomScale.MaxLength = 100;
+            this.ZoomScale.Name = "ZoomScale";
+            this.ZoomScale.ReadOnly = true;
+            this.ZoomScale.ShortcutsEnabled = false;
+            this.ZoomScale.Size = new System.Drawing.Size(77, 23);
+            this.ZoomScale.TabIndex = 5;
+            this.ZoomScale.Text = "100%";
+            this.ZoomScale.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // BasicCad_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(945, 911);
+            this.Controls.Add(this.ZoomScale);
+            this.Controls.Add(this.AdjustSnapDistance);
             this.Controls.Add(this.ZoomIn);
             this.Controls.Add(this.ZoomOut);
             this.Controls.Add(this.Container_Shapes);
@@ -160,7 +209,9 @@
             this.Container_Shapes.ResumeLayout(false);
             this.Container_Control.ResumeLayout(false);
             this.Container_Control.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.AdjustSnapDistance)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -173,6 +224,8 @@
         private System.Windows.Forms.TextBox txt_Console;
         private System.Windows.Forms.Button ZoomOut;
         private System.Windows.Forms.Button ZoomIn;
+        private System.Windows.Forms.NumericUpDown AdjustSnapDistance;
+        private System.Windows.Forms.TextBox ZoomScale;
     }
 }
 

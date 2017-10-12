@@ -66,11 +66,11 @@ namespace BasicCad
 
         private void BasicCad_Load(object sender, EventArgs e)
         {
-            cadSystem = new CadSystem(new PointF(145, 0), this.Size ,1,96);
+            cadSystem = new CadSystem(new PointF(145, 0), this.Size ,.25F,96);
             cadSystem.shapeSystem.setBaseColors(
                 new Pen(Color.FromArgb(255,20,20,20), 2), 
                 new Pen(Color.OrangeRed, 2));
-
+            AdjustSnapDistance.Value = (decimal)cadSystem.gridSystem.getGridIncrements();
             _writer = new ConsoleRedirection.TextBoxStreamWriter(txt_Console);
             // Redirect the out Console stream
             Console.SetOut(_writer);
@@ -137,9 +137,13 @@ namespace BasicCad
             if (cadSystem.gridSystem.IsWithinCurrentBounds(cursPos))
             {
                 MouseEventArgs me = (MouseEventArgs)e;
-                cadSystem.gridSystem.SnapCursorToPoint(cursPos);
-                if (me.Button == MouseButtons.Right)
+                if (me.Button == MouseButtons.Left)
                 {
+                    cadSystem.gridSystem.SnapCursorToPoint(cursPos);
+                }
+                else if (me.Button == MouseButtons.Right)
+                {
+                    cadSystem.gridSystem.SnapCursorToPoint(cursPos);
                     PointF click = cadSystem.gridSystem.GetNearestSnapPoint(cursPos);
                     cadSystem.clickCache.enqueue(click);
 
@@ -164,6 +168,10 @@ namespace BasicCad
                         cadSystem.InProcess = false;
                     }
                 }
+                else if (me.Button == MouseButtons.Middle)
+                {
+                    cadSystem.gridSystem.SnapOriginToPoint(cursPos);
+                }
                 Invalidate();
             }
         }
@@ -181,13 +189,24 @@ namespace BasicCad
         private void button1_Click(object sender, EventArgs e)
         {
             cadSystem.gridSystem.ZoomOut();
+            ZoomScale.Text = (cadSystem.gridSystem.getZoomScale() * 100).ToString() + "%";
             Invalidate();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             cadSystem.gridSystem.ZoomIn();
+            ZoomScale.Text = (cadSystem.gridSystem.getZoomScale() * 100).ToString() + "%";
             Invalidate();
+        }
+
+        private void AdjustSnapDistance_ValueChanged(object sender, EventArgs e)
+        {
+            if (cadSystem.gridSystem.setGridIncrements((float)AdjustSnapDistance.Value))
+            {
+                Invalidate();
+                Update();
+            }
         }
     }
 }
