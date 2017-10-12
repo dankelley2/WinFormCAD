@@ -3,6 +3,9 @@ Uhh.. Yeah, So I needed a precise (linear) drawing program while I was at work, 
 
 https://imgur.com/LWi3WAx
 
+![currentphoto](https://user-images.githubusercontent.com/21973290/31476278-a683036c-aed3-11e7-8464-dc36d1ef3edb.PNG)
+
+
 Commands! (So far.. Cmon, it's only a day and a half old)
 
 -Each command starts with a letter (not case sensitive)
