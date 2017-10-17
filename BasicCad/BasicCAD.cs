@@ -75,25 +75,62 @@ namespace BasicCad
             // Redirect the out Console stream
             Console.SetOut(_writer);
 
+            //List Dataset
+            List_Shapes.DataSource = ShapeSystem.DT_ShapeList;
+            List_Shapes.DisplayMember = "DisplayString";
+            List_Shapes.ValueMember = "IdShape";
+            //Shapes_TreeView.Nodes.Clear();
+            //Shapes_TreeView_Init();
+            //foreach (ShapeSystem.Shape S in cadSystem.shapeSystem.GetShapes())
+            //{
+            //    TreeNode newNode = new TreeNode();
+            //    newNode.Name = S.IdShape.ToString();
+            //    newNode.Text = S.MetaName + " " + S.MetaDesc;
+            //    if (S.ParentId != -1)
+            //    {
+            //        Shapes_TreeView.Nodes[0].Nodes[Shapes_TreeView.Nodes.IndexOf(Shapes_TreeView.Nodes.Find(S.ParentId.ToString(), true)[0])].Nodes.Add(newNode);
+            //    }
+            //    else
+            //    {
+            //        Shapes_TreeView.Nodes[0].Nodes.Add(newNode);
+            //    }
+            //}
+            //Shapes_TreeView.Refresh();
+
+            
+
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
+        
 
+        private void Shapes_TreeView_Init()
+        {
+            TreeNode ShapesNode = new TreeNode();
+            ShapesNode.Name = "MAIN_Shapes";
+            ShapesNode.Text = "Shapes";
+            this.Shapes_TreeView.Nodes.Add(ShapesNode);
+        }
         /**********************
          * PAINT
          **********************/
 
         private void BasicCad_Paint(object sender, PaintEventArgs e)
         {
+            e.Graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Default;
+            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             cadSystem.gridSystem.Draw(e.Graphics);
             cadSystem.shapeSystem.RefreshAll(e.Graphics);
-            cadSystem.gridSystem.DrawCurs(e.Graphics);
 
-            List_Shapes.Items.Clear();
-            foreach (ShapeSystem.Shape S in cadSystem.shapeSystem.GetShapes())
+            if (cadSystem.clickCache.count() > 0)
             {
-                int newItem = List_Shapes.Items.Add(S.MetaName + ";" + S.IdShape.ToString());
+                PointF cursPos = this.PointToClient(Cursor.Position);
+                cadSystem.gridSystem.DrawLineToCursor(e.Graphics, cadSystem.gridSystem.GetCursorReal(),cursPos);
             }
+            cadSystem.gridSystem.DrawCurs(e.Graphics);
+            
         }
         
         /**********************
@@ -102,32 +139,23 @@ namespace BasicCad
 
         private void List_Shapes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int index = List_Shapes.SelectedIndex;
-
             if (List_Shapes.SelectedIndex == -1)
                 return;
 
             /**********************************
              * TODO: implement better dataset of shapes for this listbox to use
              **********************************/
-            //cadSystem.IO.parsedObj result = cadSystem.IO.parsing.parseString(List_Shapes.SelectedItems[0].ToString(), ";, ");
-            //
-            //cadSystem.SelectedShape = Shape.GetShapeById((int)result.value[0]);
-            //foreach (Shape S in Shape.ShapeList)
-            //{
-            //    S.isActiveShape = false;
-            //}
-            //cadSystem.SelectedShape.isActiveShape = true;
-            //List_Shapes.SelectedIndex = index;
-            //Invalidate();
+            ShapeSystem.MakeActiveShape(cadSystem.shapeSystem.GetShapeById((int)List_Shapes.SelectedValue));
+            Invalidate();
         }
 
         private void Button_RemoveShape_Click(object sender, EventArgs e)
         {
             //TODO: SEE ABOVE
-            //if (cadSystem.SelectedShape != null)
-            //    Shape.ShapeList.Remove(cadSystem.SelectedShape);
-            //Invalidate();
+            if (cadSystem.shapeSystem.RemoveActiveShape())
+            {
+                Invalidate();
+            }
         }
 
         private void BasicCad_Click(object sender, EventArgs e)
@@ -206,6 +234,24 @@ namespace BasicCad
             {
                 Invalidate();
                 Update();
+            }
+        }
+
+        private void BasicCad_Form_MouseDown(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void BasicCad_Form_MouseUp(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void BasicCad_Form_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (cadSystem.clickCache.count() > 0)
+            {
+                Refresh();
             }
         }
     }

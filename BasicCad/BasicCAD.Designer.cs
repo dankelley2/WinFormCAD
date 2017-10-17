@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.Container_Shapes = new System.Windows.Forms.Panel();
+            this.Shapes_TreeView = new System.Windows.Forms.TreeView();
             this.List_Shapes = new System.Windows.Forms.ListBox();
             this.Button_RemoveShape = new System.Windows.Forms.Button();
             this.txt_Input = new System.Windows.Forms.TextBox();
@@ -46,24 +47,35 @@
             // Container_Shapes
             // 
             this.Container_Shapes.BackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.Container_Shapes.Controls.Add(this.Shapes_TreeView);
             this.Container_Shapes.Controls.Add(this.List_Shapes);
             this.Container_Shapes.Controls.Add(this.Button_RemoveShape);
             this.Container_Shapes.Dock = System.Windows.Forms.DockStyle.Left;
             this.Container_Shapes.Location = new System.Drawing.Point(0, 0);
             this.Container_Shapes.Name = "Container_Shapes";
-            this.Container_Shapes.Size = new System.Drawing.Size(145, 771);
+            this.Container_Shapes.Size = new System.Drawing.Size(145, 772);
             this.Container_Shapes.TabIndex = 1;
+            // 
+            // Shapes_TreeView
+            // 
+            this.Shapes_TreeView.Enabled = false;
+            this.Shapes_TreeView.Location = new System.Drawing.Point(13, 79);
+            this.Shapes_TreeView.Name = "Shapes_TreeView";
+            this.Shapes_TreeView.Size = new System.Drawing.Size(121, 481);
+            this.Shapes_TreeView.TabIndex = 3;
+            this.Shapes_TreeView.Visible = false;
             // 
             // List_Shapes
             // 
             this.List_Shapes.BackColor = System.Drawing.SystemColors.Menu;
+            this.List_Shapes.CausesValidation = false;
             this.List_Shapes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.List_Shapes.FormattingEnabled = true;
             this.List_Shapes.IntegralHeight = false;
             this.List_Shapes.Location = new System.Drawing.Point(0, 23);
             this.List_Shapes.MinimumSize = new System.Drawing.Size(145, 484);
             this.List_Shapes.Name = "List_Shapes";
-            this.List_Shapes.Size = new System.Drawing.Size(145, 748);
+            this.List_Shapes.Size = new System.Drawing.Size(145, 749);
             this.List_Shapes.TabIndex = 2;
             this.List_Shapes.SelectedIndexChanged += new System.EventHandler(this.List_Shapes_SelectedIndexChanged);
             // 
@@ -94,7 +106,7 @@
             this.Container_Control.Controls.Add(this.txt_Console);
             this.Container_Control.Controls.Add(this.txt_Input);
             this.Container_Control.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.Container_Control.Location = new System.Drawing.Point(0, 771);
+            this.Container_Control.Location = new System.Drawing.Point(0, 772);
             this.Container_Control.Name = "Container_Control";
             this.Container_Control.Size = new System.Drawing.Size(945, 140);
             this.Container_Control.TabIndex = 0;
@@ -173,6 +185,7 @@
             // 
             // ZoomScale
             // 
+            this.ZoomScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ZoomScale.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ZoomScale.Location = new System.Drawing.Point(856, 51);
             this.ZoomScale.MaxLength = 100;
@@ -189,7 +202,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(945, 911);
+            this.ClientSize = new System.Drawing.Size(945, 912);
             this.Controls.Add(this.ZoomScale);
             this.Controls.Add(this.AdjustSnapDistance);
             this.Controls.Add(this.ZoomIn);
@@ -206,6 +219,9 @@
             this.Click += new System.EventHandler(this.BasicCad_Click);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.BasicCad_Paint);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.BasicCad_KeyUp);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.BasicCad_Form_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.BasicCad_Form_MouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.BasicCad_Form_MouseUp);
             this.Container_Shapes.ResumeLayout(false);
             this.Container_Control.ResumeLayout(false);
             this.Container_Control.PerformLayout();
@@ -226,6 +242,7 @@
         private System.Windows.Forms.Button ZoomIn;
         private System.Windows.Forms.NumericUpDown AdjustSnapDistance;
         private System.Windows.Forms.TextBox ZoomScale;
+        private System.Windows.Forms.TreeView Shapes_TreeView;
     }
 }
 
