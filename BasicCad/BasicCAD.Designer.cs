@@ -29,9 +29,7 @@
         private void InitializeComponent()
         {
             this.Container_Shapes = new System.Windows.Forms.Panel();
-            this.Shapes_TreeView = new System.Windows.Forms.TreeView();
             this.List_Shapes = new System.Windows.Forms.ListBox();
-            this.Button_RemoveShape = new System.Windows.Forms.Button();
             this.txt_Input = new System.Windows.Forms.TextBox();
             this.Container_Control = new System.Windows.Forms.Panel();
             this.txt_Console = new System.Windows.Forms.TextBox();
@@ -39,31 +37,33 @@
             this.ZoomIn = new System.Windows.Forms.Button();
             this.AdjustSnapDistance = new System.Windows.Forms.NumericUpDown();
             this.ZoomScale = new System.Windows.Forms.TextBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.originToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gridToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lineSnapsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveDesignDialog = new System.Windows.Forms.SaveFileDialog();
+            this.loadDesignDialog = new System.Windows.Forms.OpenFileDialog();
             this.Container_Shapes.SuspendLayout();
             this.Container_Control.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AdjustSnapDistance)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // Container_Shapes
             // 
             this.Container_Shapes.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.Container_Shapes.Controls.Add(this.Shapes_TreeView);
             this.Container_Shapes.Controls.Add(this.List_Shapes);
-            this.Container_Shapes.Controls.Add(this.Button_RemoveShape);
             this.Container_Shapes.Dock = System.Windows.Forms.DockStyle.Left;
-            this.Container_Shapes.Location = new System.Drawing.Point(0, 0);
+            this.Container_Shapes.Location = new System.Drawing.Point(0, 24);
             this.Container_Shapes.Name = "Container_Shapes";
-            this.Container_Shapes.Size = new System.Drawing.Size(145, 772);
+            this.Container_Shapes.Size = new System.Drawing.Size(145, 748);
             this.Container_Shapes.TabIndex = 1;
-            // 
-            // Shapes_TreeView
-            // 
-            this.Shapes_TreeView.Enabled = false;
-            this.Shapes_TreeView.Location = new System.Drawing.Point(13, 79);
-            this.Shapes_TreeView.Name = "Shapes_TreeView";
-            this.Shapes_TreeView.Size = new System.Drawing.Size(121, 481);
-            this.Shapes_TreeView.TabIndex = 3;
-            this.Shapes_TreeView.Visible = false;
             // 
             // List_Shapes
             // 
@@ -72,23 +72,12 @@
             this.List_Shapes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.List_Shapes.FormattingEnabled = true;
             this.List_Shapes.IntegralHeight = false;
-            this.List_Shapes.Location = new System.Drawing.Point(0, 23);
+            this.List_Shapes.Location = new System.Drawing.Point(0, 0);
             this.List_Shapes.MinimumSize = new System.Drawing.Size(145, 484);
             this.List_Shapes.Name = "List_Shapes";
-            this.List_Shapes.Size = new System.Drawing.Size(145, 749);
+            this.List_Shapes.Size = new System.Drawing.Size(145, 748);
             this.List_Shapes.TabIndex = 2;
             this.List_Shapes.SelectedIndexChanged += new System.EventHandler(this.List_Shapes_SelectedIndexChanged);
-            // 
-            // Button_RemoveShape
-            // 
-            this.Button_RemoveShape.Dock = System.Windows.Forms.DockStyle.Top;
-            this.Button_RemoveShape.Location = new System.Drawing.Point(0, 0);
-            this.Button_RemoveShape.Name = "Button_RemoveShape";
-            this.Button_RemoveShape.Size = new System.Drawing.Size(145, 23);
-            this.Button_RemoveShape.TabIndex = 1;
-            this.Button_RemoveShape.Text = "Remove Selected";
-            this.Button_RemoveShape.UseVisualStyleBackColor = true;
-            this.Button_RemoveShape.Click += new System.EventHandler(this.Button_RemoveShape_Click);
             // 
             // txt_Input
             // 
@@ -130,7 +119,7 @@
             this.ZoomOut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.ZoomOut.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ZoomOut.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Bold);
-            this.ZoomOut.Location = new System.Drawing.Point(856, 12);
+            this.ZoomOut.Location = new System.Drawing.Point(858, 36);
             this.ZoomOut.Name = "ZoomOut";
             this.ZoomOut.Size = new System.Drawing.Size(32, 32);
             this.ZoomOut.TabIndex = 2;
@@ -144,7 +133,7 @@
             this.ZoomIn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.ZoomIn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ZoomIn.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ZoomIn.Location = new System.Drawing.Point(901, 12);
+            this.ZoomIn.Location = new System.Drawing.Point(903, 36);
             this.ZoomIn.Name = "ZoomIn";
             this.ZoomIn.Size = new System.Drawing.Size(32, 32);
             this.ZoomIn.TabIndex = 3;
@@ -162,7 +151,7 @@
             0,
             0,
             262144});
-            this.AdjustSnapDistance.Location = new System.Drawing.Point(763, 17);
+            this.AdjustSnapDistance.Location = new System.Drawing.Point(765, 41);
             this.AdjustSnapDistance.Maximum = new decimal(new int[] {
             1,
             0,
@@ -187,7 +176,7 @@
             // 
             this.ZoomScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ZoomScale.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ZoomScale.Location = new System.Drawing.Point(856, 51);
+            this.ZoomScale.Location = new System.Drawing.Point(858, 75);
             this.ZoomScale.MaxLength = 100;
             this.ZoomScale.Name = "ZoomScale";
             this.ZoomScale.ReadOnly = true;
@@ -196,6 +185,112 @@
             this.ZoomScale.TabIndex = 5;
             this.ZoomScale.Text = "100%";
             this.ZoomScale.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.BackColor = System.Drawing.SystemColors.Menu;
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.editToolStripMenuItem,
+            this.viewToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(945, 24);
+            this.menuStrip1.TabIndex = 6;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveTestToolStripMenuItem,
+            this.loadTestToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // saveTestToolStripMenuItem
+            // 
+            this.saveTestToolStripMenuItem.Name = "saveTestToolStripMenuItem";
+            this.saveTestToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.saveTestToolStripMenuItem.Text = "Save";
+            this.saveTestToolStripMenuItem.Click += new System.EventHandler(this.saveTestToolStripMenuItem_Click);
+            // 
+            // loadTestToolStripMenuItem
+            // 
+            this.loadTestToolStripMenuItem.Name = "loadTestToolStripMenuItem";
+            this.loadTestToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.loadTestToolStripMenuItem.Text = "Load";
+            this.loadTestToolStripMenuItem.Click += new System.EventHandler(this.loadTestToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(107, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.originToolStripMenuItem,
+            this.gridToolStripMenuItem,
+            this.lineSnapsToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "View";
+            // 
+            // originToolStripMenuItem
+            // 
+            this.originToolStripMenuItem.Checked = true;
+            this.originToolStripMenuItem.CheckOnClick = true;
+            this.originToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.originToolStripMenuItem.Name = "originToolStripMenuItem";
+            this.originToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.originToolStripMenuItem.Text = "Origin";
+            this.originToolStripMenuItem.Click += new System.EventHandler(this.originToolStripMenuItem_Click);
+            // 
+            // gridToolStripMenuItem
+            // 
+            this.gridToolStripMenuItem.Checked = true;
+            this.gridToolStripMenuItem.CheckOnClick = true;
+            this.gridToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.gridToolStripMenuItem.Name = "gridToolStripMenuItem";
+            this.gridToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.gridToolStripMenuItem.Text = "Grid";
+            this.gridToolStripMenuItem.Click += new System.EventHandler(this.gridToolStripMenuItem_Click);
+            // 
+            // lineSnapsToolStripMenuItem
+            // 
+            this.lineSnapsToolStripMenuItem.Checked = true;
+            this.lineSnapsToolStripMenuItem.CheckOnClick = true;
+            this.lineSnapsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.lineSnapsToolStripMenuItem.Name = "lineSnapsToolStripMenuItem";
+            this.lineSnapsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.lineSnapsToolStripMenuItem.Text = "Line Snaps";
+            this.lineSnapsToolStripMenuItem.Click += new System.EventHandler(this.lineSnapsToolStripMenuItem_Click);
+            // 
+            // saveDesignDialog
+            // 
+            this.saveDesignDialog.DefaultExt = "bc";
+            this.saveDesignDialog.FileName = "design.bc";
+            this.saveDesignDialog.Filter = "BasicCad files|*.bc";
+            this.saveDesignDialog.InitialDirectory = "D:\\";
+            this.saveDesignDialog.SupportMultiDottedExtensions = true;
+            this.saveDesignDialog.Title = "Save Design";
+            // 
+            // loadDesignDialog
+            // 
+            this.loadDesignDialog.FileName = "design.bs";
+            this.loadDesignDialog.Filter = "BasicCad files|*.bc|All files|*.*";
+            this.loadDesignDialog.Title = "Load saved design";
             // 
             // BasicCad_Form
             // 
@@ -209,6 +304,9 @@
             this.Controls.Add(this.ZoomOut);
             this.Controls.Add(this.Container_Shapes);
             this.Controls.Add(this.Container_Control);
+            this.Controls.Add(this.menuStrip1);
+            this.KeyPreview = true;
+            this.MainMenuStrip = this.menuStrip1;
             this.MaximumSize = new System.Drawing.Size(1920, 1080);
             this.MinimumSize = new System.Drawing.Size(961, 950);
             this.Name = "BasicCad_Form";
@@ -218,6 +316,7 @@
             this.ResizeEnd += new System.EventHandler(this.BasicCad_ResizeEnd);
             this.Click += new System.EventHandler(this.BasicCad_Click);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.BasicCad_Paint);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.BasicCad_Form_KeyPress);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.BasicCad_KeyUp);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.BasicCad_Form_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.BasicCad_Form_MouseMove);
@@ -226,6 +325,8 @@
             this.Container_Control.ResumeLayout(false);
             this.Container_Control.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AdjustSnapDistance)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -234,7 +335,6 @@
         #endregion
         private System.Windows.Forms.Panel Container_Shapes;
         private System.Windows.Forms.ListBox List_Shapes;
-        private System.Windows.Forms.Button Button_RemoveShape;
         private System.Windows.Forms.TextBox txt_Input;
         private System.Windows.Forms.Panel Container_Control;
         private System.Windows.Forms.TextBox txt_Console;
@@ -242,7 +342,18 @@
         private System.Windows.Forms.Button ZoomIn;
         private System.Windows.Forms.NumericUpDown AdjustSnapDistance;
         private System.Windows.Forms.TextBox ZoomScale;
-        private System.Windows.Forms.TreeView Shapes_TreeView;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog saveDesignDialog;
+        private System.Windows.Forms.OpenFileDialog loadDesignDialog;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem originToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem gridToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem lineSnapsToolStripMenuItem;
     }
 }
 

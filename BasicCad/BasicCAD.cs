@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using ConsoleRedirection;
 using System.IO;
 using CAD;
+using System.Linq;
 
 namespace BasicCad
 {
@@ -66,9 +67,9 @@ namespace BasicCad
 
         private void BasicCad_Load(object sender, EventArgs e)
         {
-            cadSystem = new CadSystem(new PointF(145, 0), this.Size ,.25F,96);
+            cadSystem = new CadSystem(new PointF(145, 24), this.Size, .25F, 96);
             cadSystem.shapeSystem.setBaseColors(
-                new Pen(Color.FromArgb(255,20,20,20), 2), 
+                new Pen(Color.FromArgb(255, 20, 20, 20), 2),
                 new Pen(Color.OrangeRed, 2));
             AdjustSnapDistance.Value = (decimal)cadSystem.gridSystem.getGridIncrements();
             _writer = new ConsoleRedirection.TextBoxStreamWriter(txt_Console);
@@ -97,20 +98,20 @@ namespace BasicCad
             //}
             //Shapes_TreeView.Refresh();
 
-            
+
 
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
-        
 
-        private void Shapes_TreeView_Init()
-        {
-            TreeNode ShapesNode = new TreeNode();
-            ShapesNode.Name = "MAIN_Shapes";
-            ShapesNode.Text = "Shapes";
-            this.Shapes_TreeView.Nodes.Add(ShapesNode);
-        }
+
+        //private void Shapes_TreeView_Init()
+        //{
+        //    TreeNode ShapesNode = new TreeNode();
+        //    ShapesNode.Name = "MAIN_Shapes";
+        //    ShapesNode.Text = "Shapes";
+        //    this.Shapes_TreeView.Nodes.Add(ShapesNode);
+        //}
         /**********************
          * PAINT
          **********************/
@@ -121,18 +122,20 @@ namespace BasicCad
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Default;
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            cadSystem.gridSystem.Draw(e.Graphics);
+            cadSystem.gridSystem.DrawGrid(e.Graphics);
+            cadSystem.gridSystem.DrawOrigin(e.Graphics);
             cadSystem.shapeSystem.RefreshAll(e.Graphics);
+            cadSystem.gridSystem.DrawSnaps(e.Graphics);
 
             if (cadSystem.clickCache.count() > 0)
             {
                 PointF cursPos = this.PointToClient(Cursor.Position);
-                cadSystem.gridSystem.DrawLineToCursor(e.Graphics, cadSystem.gridSystem.GetCursorReal(),cursPos);
+                cadSystem.gridSystem.DrawLineToCursor(e.Graphics, cadSystem.gridSystem.GetCursorReal(), cursPos);
             }
             cadSystem.gridSystem.DrawCurs(e.Graphics);
-            
+
         }
-        
+
         /**********************
          * Control EVENTS
          **********************/
@@ -151,11 +154,6 @@ namespace BasicCad
 
         private void Button_RemoveShape_Click(object sender, EventArgs e)
         {
-            //TODO: SEE ABOVE
-            if (cadSystem.shapeSystem.RemoveActiveShape())
-            {
-                Invalidate();
-            }
         }
 
         private void BasicCad_Click(object sender, EventArgs e)
@@ -167,17 +165,20 @@ namespace BasicCad
                 MouseEventArgs me = (MouseEventArgs)e;
                 if (me.Button == MouseButtons.Left)
                 {
+
+                    if (!(cadSystem.shapeSystem.ActivateShapeUnderPoint(cursPos))){
+                    }
                     cadSystem.gridSystem.SnapCursorToPoint(cursPos);
                 }
                 else if (me.Button == MouseButtons.Right)
                 {
+                    cadSystem.InProcess = true;
                     cadSystem.gridSystem.SnapCursorToPoint(cursPos);
                     PointF click = cadSystem.gridSystem.GetNearestSnapPoint(cursPos);
                     cadSystem.clickCache.enqueue(click);
 
-                    if (!(cadSystem.InProcess) && cadSystem.clickCache.count() == 2)
+                    if (cadSystem.clickCache.count() == 2)
                     {
-                        cadSystem.InProcess = true;
                         bool prevPositioning = cadSystem.gridSystem.relativePositioning;
                         cadSystem.gridSystem.relativePositioning = false;
                         PointF P1 = cadSystem.clickCache.dequeue();
@@ -212,6 +213,22 @@ namespace BasicCad
 
         private void BasicCad_KeyUp(object sender, KeyEventArgs e)
         {
+            if (e.KeyCode == Keys.Escape)
+            {
+                if (cadSystem.InProcess)
+                {
+                    int numItems = cadSystem.clickCache.clear();
+                    if (numItems > 0)
+                    {
+                        Console.WriteLine("Cleared ClickQueue of {0} items", numItems);
+                        Invalidate();
+                    }
+                }
+            }
+            if (e.KeyCode == Keys.Delete)
+            {
+                deleteToolStripMenuItem_Click(sender, e);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -239,20 +256,88 @@ namespace BasicCad
 
         private void BasicCad_Form_MouseDown(object sender, MouseEventArgs e)
         {
-
+            MouseEventArgs me = (MouseEventArgs)e;
         }
 
         private void BasicCad_Form_MouseUp(object sender, MouseEventArgs e)
         {
-
+            MouseEventArgs me = (MouseEventArgs)e;
         }
 
         private void BasicCad_Form_MouseMove(object sender, MouseEventArgs e)
         {
             if (cadSystem.clickCache.count() > 0)
             {
-                Refresh();
+                PointF start = cadSystem.gridSystem.GetCursorReal();
+                PointF end = this.PointToClient(Cursor.Position);
+                RectangleF invalidrect = new RectangleF(Math.Min(start.X, end.X) - 30,
+                               Math.Min(start.Y, end.Y) - 30,
+                               Math.Abs(start.X - end.X) + 60,
+                               Math.Abs(start.Y - end.Y) + 60);
+                Invalidate(new Region(invalidrect));
             }
+        }
+
+        private void saveTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveDesignDialog.FileName = "";
+            saveDesignDialog.ShowDialog();
+
+            if (saveDesignDialog.FileName != "")
+            {
+                cadSystem.SerializeAndSaveShapes(saveDesignDialog.FileName);
+            }
+            else
+            {
+                Console.WriteLine("Save dialog cancelled.");
+            }
+        }
+
+        private void loadTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            loadDesignDialog.FileName = "";
+            loadDesignDialog.ShowDialog();
+
+            if (loadDesignDialog.FileName != "")
+            {
+                cadSystem.DeSerializeAndLoadShapes(loadDesignDialog.FileName);
+                Invalidate();
+            }
+            else
+            {
+                Console.WriteLine("Load dialog cancelled.");
+            }
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (cadSystem.shapeSystem.RemoveActiveShape())
+            {
+                Invalidate();
+            }
+        }
+
+        private void BasicCad_Form_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+        }
+
+        private void originToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            originToolStripMenuItem.Checked = cadSystem.gridSystem.toggleOrigin();
+            Invalidate();
+        }
+
+        private void gridToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            gridToolStripMenuItem.Checked = cadSystem.gridSystem.toggleGrid();
+            Invalidate();
+        }
+
+        private void lineSnapsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            lineSnapsToolStripMenuItem.Checked = cadSystem.gridSystem.toggleSnaps();
+            Invalidate();
         }
     }
 }
