@@ -1,9 +1,7 @@
 # WinFormCAD
 Uhh.. Yeah, So I needed a precise (linear) drawing program while I was at work, and couldnt install anything that did the trick.
 
-https://imgur.com/LWi3WAx
-
-![currentphoto](https://user-images.githubusercontent.com/21973290/31476278-a683036c-aed3-11e7-8464-dc36d1ef3edb.PNG)
+![currentphoto](https://user-images.githubusercontent.com/21973290/31640663-a3372214-b2ad-11e7-9689-7f2295a6f7e9.PNG)
 
 
 Commands! (So far.. Cmon, it's only a day and a half old)
@@ -13,6 +11,7 @@ Commands! (So far.. Cmon, it's only a day and a half old)
 1) "R" Relative / Global positioning toggle
 2) "L" Create Line
 3) "C" Move Cursor
+4) "D" Dimension line
 
 
 "R" May be used on it's own,
@@ -26,7 +25,7 @@ Acceptable delineaters are ";" "," and " " (empty space)
 The Gridsystem is in inches, and the will default to 96 PPI, with gridlines marking each 1/4".
 The Gridsystem is not locked to the screen, and may be scaled by using the "+" and "-" buttons on the upper right.
 Left clicking the grid will move(snap) the cursor. Cursor location is used as the starting point for all relative lines.
-
+Clicking MMB will move the origin of the grid (panning)
 
 Right clicking the grid will move(snap) the cursor, and will ALSO Queue whatever point you just snapped the cursor to.
 -Right clicking the grid a SECOND time will draw a line between the previous point, and your current point, then empty the "ClickQueue"
@@ -42,9 +41,9 @@ EXAMPLE Commands:
 
 TODO:
 
--Dimensioning lines (optional)
+-Dimensioning lines (optional) -- Done!
 -Arcs
 -Center point circles
 -Improve Line metaData and selection box
--Add snap spacing (grid distance) modifiers
+-Add snap spacing (grid distance) modifiers -- Done!
 -Sob gently because I'm doing with with winforms
