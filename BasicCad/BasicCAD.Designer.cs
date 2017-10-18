@@ -28,8 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BasicCad_Form));
             this.Container_Shapes = new System.Windows.Forms.Panel();
-            this.List_Shapes = new System.Windows.Forms.ListBox();
+            this.treeView = new System.Windows.Forms.TreeView();
             this.txt_Input = new System.Windows.Forms.TextBox();
             this.Container_Control = new System.Windows.Forms.Panel();
             this.txt_Console = new System.Windows.Forms.TextBox();
@@ -58,26 +59,23 @@
             // Container_Shapes
             // 
             this.Container_Shapes.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.Container_Shapes.Controls.Add(this.List_Shapes);
+            this.Container_Shapes.Controls.Add(this.treeView);
             this.Container_Shapes.Dock = System.Windows.Forms.DockStyle.Left;
             this.Container_Shapes.Location = new System.Drawing.Point(0, 24);
             this.Container_Shapes.Name = "Container_Shapes";
             this.Container_Shapes.Size = new System.Drawing.Size(145, 748);
             this.Container_Shapes.TabIndex = 1;
             // 
-            // List_Shapes
+            // treeView
             // 
-            this.List_Shapes.BackColor = System.Drawing.SystemColors.Menu;
-            this.List_Shapes.CausesValidation = false;
-            this.List_Shapes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.List_Shapes.FormattingEnabled = true;
-            this.List_Shapes.IntegralHeight = false;
-            this.List_Shapes.Location = new System.Drawing.Point(0, 0);
-            this.List_Shapes.MinimumSize = new System.Drawing.Size(145, 484);
-            this.List_Shapes.Name = "List_Shapes";
-            this.List_Shapes.Size = new System.Drawing.Size(145, 748);
-            this.List_Shapes.TabIndex = 2;
-            this.List_Shapes.SelectedIndexChanged += new System.EventHandler(this.List_Shapes_SelectedIndexChanged);
+            this.treeView.Dock = System.Windows.Forms.DockStyle.Left;
+            this.treeView.FullRowSelect = true;
+            this.treeView.HideSelection = false;
+            this.treeView.Location = new System.Drawing.Point(0, 0);
+            this.treeView.Name = "treeView";
+            this.treeView.Size = new System.Drawing.Size(145, 748);
+            this.treeView.TabIndex = 3;
+            this.treeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView_AfterSelect);
             // 
             // txt_Input
             // 
@@ -253,7 +251,7 @@
             this.originToolStripMenuItem.CheckOnClick = true;
             this.originToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.originToolStripMenuItem.Name = "originToolStripMenuItem";
-            this.originToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.originToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.originToolStripMenuItem.Text = "Origin";
             this.originToolStripMenuItem.Click += new System.EventHandler(this.originToolStripMenuItem_Click);
             // 
@@ -263,7 +261,7 @@
             this.gridToolStripMenuItem.CheckOnClick = true;
             this.gridToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.gridToolStripMenuItem.Name = "gridToolStripMenuItem";
-            this.gridToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.gridToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.gridToolStripMenuItem.Text = "Grid";
             this.gridToolStripMenuItem.Click += new System.EventHandler(this.gridToolStripMenuItem_Click);
             // 
@@ -273,7 +271,7 @@
             this.lineSnapsToolStripMenuItem.CheckOnClick = true;
             this.lineSnapsToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.lineSnapsToolStripMenuItem.Name = "lineSnapsToolStripMenuItem";
-            this.lineSnapsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.lineSnapsToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.lineSnapsToolStripMenuItem.Text = "Line Snaps";
             this.lineSnapsToolStripMenuItem.Click += new System.EventHandler(this.lineSnapsToolStripMenuItem_Click);
             // 
@@ -305,6 +303,7 @@
             this.Controls.Add(this.Container_Shapes);
             this.Controls.Add(this.Container_Control);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.MaximumSize = new System.Drawing.Size(1920, 1080);
@@ -334,7 +333,6 @@
 
         #endregion
         private System.Windows.Forms.Panel Container_Shapes;
-        private System.Windows.Forms.ListBox List_Shapes;
         private System.Windows.Forms.TextBox txt_Input;
         private System.Windows.Forms.Panel Container_Control;
         private System.Windows.Forms.TextBox txt_Console;
@@ -354,6 +352,7 @@
         private System.Windows.Forms.ToolStripMenuItem originToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gridToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem lineSnapsToolStripMenuItem;
+        private System.Windows.Forms.TreeView treeView;
     }
 }
 

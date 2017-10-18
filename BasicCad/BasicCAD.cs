@@ -6,6 +6,7 @@ using ConsoleRedirection;
 using System.IO;
 using CAD;
 using System.Linq;
+using System.Data;
 
 namespace BasicCad
 {
@@ -33,6 +34,7 @@ namespace BasicCad
                 cadSystem.commandHistory.AddToHistory(txt_Input.Text);
                 cadSystem.ParseInput(txt_Input.Text);
                 txt_Input.Clear();
+                treeView_Update();
 
                 e.Handled = true;
                 e.SuppressKeyPress = true;
@@ -75,11 +77,6 @@ namespace BasicCad
             _writer = new ConsoleRedirection.TextBoxStreamWriter(txt_Console);
             // Redirect the out Console stream
             Console.SetOut(_writer);
-
-            //List Dataset
-            List_Shapes.DataSource = ShapeSystem.DT_ShapeList;
-            List_Shapes.DisplayMember = "DisplayString";
-            List_Shapes.ValueMember = "IdShape";
             //Shapes_TreeView.Nodes.Clear();
             //Shapes_TreeView_Init();
             //foreach (ShapeSystem.Shape S in cadSystem.shapeSystem.GetShapes())
@@ -105,13 +102,50 @@ namespace BasicCad
         }
 
 
-        //private void Shapes_TreeView_Init()
-        //{
-        //    TreeNode ShapesNode = new TreeNode();
-        //    ShapesNode.Name = "MAIN_Shapes";
-        //    ShapesNode.Text = "Shapes";
-        //    this.Shapes_TreeView.Nodes.Add(ShapesNode);
-        //}
+        private void treeView_Init()
+        {
+            TreeNode ShapesNode = new TreeNode();
+            ShapesNode.Name = "MAIN_Shapes";
+            ShapesNode.Text = "Shapes";
+            this.treeView.Nodes.Add(ShapesNode);
+        }
+
+        private void treeView_Update()
+        {
+            treeView.Nodes.Clear();
+            treeView_Init();
+            foreach (DataRow row in ShapeSystem.DT_ShapeList.Rows)
+            {
+                var Id = row[0].ToString();
+                var parentId = row[1].ToString();
+                var name = row[2].ToString();
+                var desc = row[3].ToString();
+
+                TreeNode newNode = new TreeNode();
+                newNode.Name = Id;
+                newNode.Text = name + Id;
+
+                if (parentId != "-1")
+                {
+                    int idex = treeView.Nodes[0].Nodes.IndexOfKey(parentId);
+                    if (idex != -1)
+                    {
+                        treeView.Nodes[0].Nodes[idex].Nodes.Add(newNode);
+                    }
+                    else
+                    {
+                        treeView.Nodes[0].Nodes.Add(newNode);
+                    }
+                }
+                else
+                {
+                    treeView.Nodes[0].Nodes.Add(newNode);
+                }
+            }
+
+            treeView.ExpandAll();
+        }
+
         /**********************
          * PAINT
          **********************/
@@ -139,18 +173,6 @@ namespace BasicCad
         /**********************
          * Control EVENTS
          **********************/
-
-        private void List_Shapes_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (List_Shapes.SelectedIndex == -1)
-                return;
-
-            /**********************************
-             * TODO: implement better dataset of shapes for this listbox to use
-             **********************************/
-            ShapeSystem.MakeActiveShape(cadSystem.shapeSystem.GetShapeById((int)List_Shapes.SelectedValue));
-            Invalidate();
-        }
 
         private void Button_RemoveShape_Click(object sender, EventArgs e)
         {
@@ -195,6 +217,7 @@ namespace BasicCad
                         cadSystem.ParseInput(lineInput);
                         cadSystem.gridSystem.relativePositioning = prevPositioning;
                         cadSystem.InProcess = false;
+                        treeView_Update();
                     }
                 }
                 else if (me.Button == MouseButtons.Middle)
@@ -301,6 +324,7 @@ namespace BasicCad
             if (loadDesignDialog.FileName != "")
             {
                 cadSystem.DeSerializeAndLoadShapes(loadDesignDialog.FileName);
+                treeView_Update();
                 Invalidate();
             }
             else
@@ -313,6 +337,7 @@ namespace BasicCad
         {
             if (cadSystem.shapeSystem.RemoveActiveShape())
             {
+                treeView_Update();
                 Invalidate();
             }
         }
@@ -337,6 +362,13 @@ namespace BasicCad
         private void lineSnapsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             lineSnapsToolStripMenuItem.Checked = cadSystem.gridSystem.toggleSnaps();
+            Invalidate();
+        }
+
+        private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (e.Node.Name == "MAIN_Shapes") { return; }
+            ShapeSystem.MakeActiveShape(cadSystem.shapeSystem.GetShapeById(Convert.ToInt16(e.Node.Name)));
             Invalidate();
         }
     }
