@@ -13,6 +13,7 @@ namespace BasicCad
     public partial class BasicCad_Form : Form
     {
         public TextBoxStreamWriter _writer;
+        public int clicksNeeded { get; set; }
 
         //Create CadSystem
         CadSystem cadSystem;
@@ -77,28 +78,10 @@ namespace BasicCad
             _writer = new ConsoleRedirection.TextBoxStreamWriter(txt_Console);
             // Redirect the out Console stream
             Console.SetOut(_writer);
-            //Shapes_TreeView.Nodes.Clear();
-            //Shapes_TreeView_Init();
-            //foreach (ShapeSystem.Shape S in cadSystem.shapeSystem.GetShapes())
-            //{
-            //    TreeNode newNode = new TreeNode();
-            //    newNode.Name = S.IdShape.ToString();
-            //    newNode.Text = S.MetaName + " " + S.MetaDesc;
-            //    if (S.ParentId != -1)
-            //    {
-            //        Shapes_TreeView.Nodes[0].Nodes[Shapes_TreeView.Nodes.IndexOf(Shapes_TreeView.Nodes.Find(S.ParentId.ToString(), true)[0])].Nodes.Add(newNode);
-            //    }
-            //    else
-            //    {
-            //        Shapes_TreeView.Nodes[0].Nodes.Add(newNode);
-            //    }
-            //}
-            //Shapes_TreeView.Refresh();
-
-
-
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            treeView_Init();
+            togg2PLine_Click(sender, e);
         }
 
 
@@ -112,40 +95,114 @@ namespace BasicCad
 
         private void treeView_Update()
         {
-            treeView.Nodes.Clear();
-            treeView_Init();
-            foreach (DataRow row in ShapeSystem.DT_ShapeList.Rows)
+            //Validate Existing Branches
+            TreeNode ShapeNode = treeView.Nodes[0];
+            //Remove old
+            RemoveAbandonedNodes(ShapeNode);
+            DataView orderedView = ShapeSystem.DT_ShapeList.DefaultView;
+            orderedView.Sort = "IdShape ASC";
+            foreach (DataRowView row in orderedView)
             {
-                var Id = row[0].ToString();
                 var parentId = row[1].ToString();
+                var Id = row[0].ToString();
                 var name = row[2].ToString();
                 var desc = row[3].ToString();
 
-                TreeNode newNode = new TreeNode();
-                newNode.Name = Id;
-                newNode.Text = name + Id;
-
-                if (parentId != "-1")
+                //check for new nodes and add
+                if (!(checkNodeExistence(ShapeNode, Id)))
                 {
-                    int idex = treeView.Nodes[0].Nodes.IndexOfKey(parentId);
-                    if (idex != -1)
+                    TreeNode newNode = new TreeNode();
+                    newNode.Name = Id;
+                    newNode.Text = name + Id;
+                    TreeNode parentNode = FindParentNodesRecursive(ShapeNode, parentId);
+                    if (parentNode != null)
                     {
-                        treeView.Nodes[0].Nodes[idex].Nodes.Add(newNode);
+                        parentNode.Nodes.Add(newNode);
                     }
                     else
                     {
-                        treeView.Nodes[0].Nodes.Add(newNode);
+                        if (parentId != "-1")
+                        {
+                            ShapeSystem.FixParentAbandonmentIssues(Convert.ToInt16(Id));
+                        }
+                        ShapeNode.Nodes.Add(newNode);
                     }
-                }
-                else
-                {
-                    treeView.Nodes[0].Nodes.Add(newNode);
+
                 }
             }
 
             treeView.ExpandAll();
         }
 
+        //NODE RECURSION
+        public TreeNode FindParentNodesRecursive(TreeNode oParentNode, string NameSearchFor)
+        {
+            TreeNode returnNode = null;
+            // Start recursion on all subnodes.
+            foreach (TreeNode oSubNode in oParentNode.Nodes)
+            {
+                if (oSubNode.Name == NameSearchFor)
+                    return oSubNode;
+                else if (oSubNode.Nodes.Count > 0)
+                {
+                    returnNode = FindParentNodesRecursive(oSubNode, NameSearchFor);
+                }
+            }
+            return returnNode;
+        }
+        public void RemoveAbandonedNodes(TreeNode oParentNode)
+        {
+            // Start recursion on all subnodes.
+            foreach (TreeNode oSubNode in oParentNode.Nodes)
+            {
+                if (!(ShapeSystem.DT_ShapeList.Rows.Contains(oSubNode.Name)))
+                {
+                    oSubNode.Nodes.Clear();
+                    oSubNode.Remove();
+                    break;
+                }
+                else if (oSubNode.Nodes.Count > 0)
+                {
+                    RemoveAbandonedNodes(oSubNode);
+                }
+            }
+        }
+        public bool checkNodeExistence(TreeNode oParentNode, string NameSearchFor)
+        {
+            bool Exists = false;
+            // Start recursion on all subnodes.
+            foreach (TreeNode oSubNode in oParentNode.Nodes)
+            {
+                if (oSubNode.Name == NameSearchFor)
+                {
+                    Exists = true;
+                    break;
+                }
+                else if (oSubNode.Nodes.Count > 0)
+                {
+                    Exists = checkNodeExistence(oSubNode, NameSearchFor);
+                    if (Exists) break;
+                }
+            }
+            return Exists;
+        }
+        public void RemoveNodesRecursive(TreeNode oParentNode, string NameSearchFor)
+        {
+            // Start recursion on all subnodes.
+            foreach (TreeNode oSubNode in oParentNode.Nodes)
+            {
+                if (oSubNode.Name == NameSearchFor)
+                {
+                    oSubNode.Nodes.Clear();
+                    oSubNode.Remove();
+                    break;
+                }
+                else if (oSubNode.Nodes.Count > 0)
+                {
+                    RemoveNodesRecursive(oSubNode, NameSearchFor);
+                }
+            }
+        }
         /**********************
          * PAINT
          **********************/
@@ -174,10 +231,6 @@ namespace BasicCad
          * Control EVENTS
          **********************/
 
-        private void Button_RemoveShape_Click(object sender, EventArgs e)
-        {
-        }
-
         private void BasicCad_Click(object sender, EventArgs e)
         {
             PointF cursPos = this.PointToClient(Cursor.Position);
@@ -188,36 +241,40 @@ namespace BasicCad
                 if (me.Button == MouseButtons.Left)
                 {
 
-                    if (!(cadSystem.shapeSystem.ActivateShapeUnderPoint(cursPos))){
+                    if (!(cadSystem.InProcess))
+                    {
+                        cadSystem.gridSystem.SnapCursorToPoint(cursPos);
                     }
-                    cadSystem.gridSystem.SnapCursorToPoint(cursPos);
                 }
                 else if (me.Button == MouseButtons.Right)
                 {
-                    cadSystem.InProcess = true;
                     cadSystem.gridSystem.SnapCursorToPoint(cursPos);
                     PointF click = cadSystem.gridSystem.GetNearestSnapPoint(cursPos);
-                    cadSystem.clickCache.enqueue(click);
-
-                    if (cadSystem.clickCache.count() == 2)
+                    //if nothing is in process
+                    if (!(cadSystem.InProcess))
                     {
-                        bool prevPositioning = cadSystem.gridSystem.relativePositioning;
-                        cadSystem.gridSystem.relativePositioning = false;
-                        PointF P1 = cadSystem.clickCache.dequeue();
-                        PointF P2;
-                        if ((ModifierKeys & Keys.Shift) == Keys.Shift)
+                        //CHECK ACTIVE TOOL
+                        if (togg2PLine.Checked)
                         {
-                            P2 = cadSystem.clickCache.peek();
+                            cadSystem.clickCache.clear();
+                            cadSystem.clickCache.enqueue(click);
+                            cadSystem.InProcess = true;
+                            clicksNeeded = 2;
                         }
-                        else
+                    }
+                    //else just add click
+                    else
+                    {
+                        cadSystem.clickCache.enqueue(click);
+                    }
+                    //Check if clicks are done
+                    if (cadSystem.clickCache.count() == clicksNeeded)
+                    {
+                        //CHECK ACTIVE TOOL
+                        if (togg2PLine.Checked)
                         {
-                            P2 = cadSystem.clickCache.dequeue();
+                            Make2PLine(sender, e);
                         }
-                        string lineInput = "L " + P1.X.ToString() + " " + P1.Y.ToString() + " " + P2.X.ToString() + " " + P2.Y.ToString();
-                        cadSystem.ParseInput(lineInput);
-                        cadSystem.gridSystem.relativePositioning = prevPositioning;
-                        cadSystem.InProcess = false;
-                        treeView_Update();
                     }
                 }
                 else if (me.Button == MouseButtons.Middle)
@@ -227,6 +284,45 @@ namespace BasicCad
                 Invalidate();
             }
         }
+
+        private void Make2PLine(object sender, EventArgs e)
+        {
+            bool prevPositioning = cadSystem.gridSystem.relativePositioning;
+            cadSystem.gridSystem.relativePositioning = false;
+            PointF P1 = cadSystem.clickCache.dequeue();
+            PointF P2;
+            if ((ModifierKeys & Keys.Shift) == Keys.Shift)
+            {
+                P2 = cadSystem.clickCache.peek();
+            }
+            else
+            {
+                P2 = cadSystem.clickCache.dequeue();
+                cadSystem.InProcess = false;
+            }
+            string lineInput = "L " + P1.X.ToString() + " " + P1.Y.ToString() + " " + P2.X.ToString() + " " + P2.Y.ToString();
+            cadSystem.ParseInput(lineInput);
+            cadSystem.gridSystem.relativePositioning = prevPositioning;
+            treeView_Update();
+        }
+        private void Make2PRect(object sender, EventArgs e)
+        {
+            bool prevPositioning = cadSystem.gridSystem.relativePositioning;
+            cadSystem.gridSystem.relativePositioning = false;
+            PointF P1 = cadSystem.clickCache.dequeue();
+            PointF P2 = cadSystem.clickCache.dequeue();
+            cadSystem.InProcess = false;
+            string RectInput = "RT " + P1.X.ToString() + " " + P1.Y.ToString() + " " + P2.X.ToString() + " " + P2.Y.ToString();
+            cadSystem.ParseInput(RectInput);
+            cadSystem.gridSystem.relativePositioning = prevPositioning;
+            treeView_Update();
+        }
+
+
+        /**********************************
+         * OTHER EVENTS
+         *********************************/
+
 
         private void BasicCad_ResizeEnd(object sender, EventArgs e)
         {
@@ -238,22 +334,23 @@ namespace BasicCad
         {
             if (e.KeyCode == Keys.Escape)
             {
-                if (cadSystem.InProcess)
-                {
-                    int numItems = cadSystem.clickCache.clear();
-                    if (numItems > 0)
-                    {
-                        Console.WriteLine("Cleared ClickQueue of {0} items", numItems);
-                        Invalidate();
-                    }
-                }
+                CancelCommand();
             }
             if (e.KeyCode == Keys.Delete)
             {
                 deleteToolStripMenuItem_Click(sender, e);
             }
         }
-
+        private void CancelCommand()
+        {
+            if (cadSystem.InProcess)
+            {
+                int numItems = cadSystem.clickCache.clear();
+                cadSystem.InProcess = false;
+                Console.WriteLine("Cleared ClickQueue of {0} items", numItems);
+                Invalidate();
+            }
+        }
         private void button1_Click(object sender, EventArgs e)
         {
             cadSystem.gridSystem.ZoomOut();
@@ -279,7 +376,21 @@ namespace BasicCad
 
         private void BasicCad_Form_MouseDown(object sender, MouseEventArgs e)
         {
-            MouseEventArgs me = (MouseEventArgs)e;
+            PointF cursPos = this.PointToClient(Cursor.Position);
+            if (e.Button == MouseButtons.Left && toggMoveDim.Checked)
+            {
+                if (!cadSystem.shapeSystem.ActivateShapeUnderPoint<ShapeSystem.LineDimension>(cursPos))
+                {
+                    cadSystem.shapeSystem.DeselectActiveShapes();
+                }
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                if (!cadSystem.shapeSystem.ActivateShapeUnderPoint(cursPos))
+                {
+                    cadSystem.shapeSystem.DeselectActiveShapes();
+                }
+            }
         }
 
         private void BasicCad_Form_MouseUp(object sender, MouseEventArgs e)
@@ -298,6 +409,14 @@ namespace BasicCad
                                Math.Abs(start.X - end.X) + 60,
                                Math.Abs(start.Y - end.Y) + 60);
                 Invalidate(new Region(invalidrect));
+            }
+            if (toggMoveDim.Checked == true && cadSystem.shapeSystem.GetActiveShape() is ShapeSystem.LineDimension)
+            {
+                if (e.Button == MouseButtons.Left)
+                {
+                    cadSystem.shapeSystem.AdjustDimByRealCursor(this.PointToClient(Cursor.Position), cadSystem.shapeSystem.GetActiveShape().IdShape);
+                    Invalidate();
+                }
             }
         }
 
@@ -370,6 +489,33 @@ namespace BasicCad
             if (e.Node.Name == "MAIN_Shapes") { return; }
             ShapeSystem.MakeActiveShape(cadSystem.shapeSystem.GetShapeById(Convert.ToInt16(e.Node.Name)));
             Invalidate();
+        }
+
+        private void onlyActiveLineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            onlyActiveLineToolStripMenuItem.Checked = cadSystem.gridSystem.toggleActiveSnaps();
+            Invalidate();
+        }
+
+        private void uncheckAllInToolStrip()
+        {
+            CancelCommand();
+            foreach (CheckBox C in this.ToolsFlowLayout.Controls)
+            {
+                    C.Checked = false;
+            }
+        }
+
+        private void togg2PLine_Click(object sender, EventArgs e)
+        {
+            uncheckAllInToolStrip();
+            togg2PLine.Checked = !(togg2PLine.Checked);
+        }
+
+        private void toggMoveDim_Click(object sender, EventArgs e)
+        {
+            uncheckAllInToolStrip();
+            toggMoveDim.Checked = true;
         }
     }
 }
