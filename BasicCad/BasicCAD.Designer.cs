@@ -53,19 +53,27 @@
             this.loadDesignDialog = new System.Windows.Forms.OpenFileDialog();
             this.label_Snap = new System.Windows.Forms.Label();
             this.label_Zoom = new System.Windows.Forms.Label();
-            this.TabContainer = new System.Windows.Forms.TabControl();
-            this.tabTools = new System.Windows.Forms.TabPage();
-            this.ToolsFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
-            this.togg2PLine = new System.Windows.Forms.CheckBox();
-            this.toggMoveDim = new System.Windows.Forms.CheckBox();
-            this.TabExport = new System.Windows.Forms.TabPage();
+            this.LMBControls = new System.Windows.Forms.ToolStrip();
+            this.tool_MoveDim = new System.Windows.Forms.ToolStripButton();
+            this.tool_AddDim = new System.Windows.Forms.ToolStripButton();
+            this.tool_BasicSelect = new System.Windows.Forms.ToolStripButton();
+            this.mouseControls = new System.Windows.Forms.SplitContainer();
+            this.RMBControls = new System.Windows.Forms.ToolStrip();
+            this.tool_AddPt = new System.Windows.Forms.ToolStripButton();
+            this.tool_2PRect = new System.Windows.Forms.ToolStripButton();
+            this.tool_2PLine = new System.Windows.Forms.ToolStripButton();
+            this.tool_2PDim = new System.Windows.Forms.ToolStripButton();
+            this.tool_2PCir = new System.Windows.Forms.ToolStripButton();
             this.Container_Shapes.SuspendLayout();
             this.Container_Control.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AdjustSnapDistance)).BeginInit();
             this.menuStrip1.SuspendLayout();
-            this.TabContainer.SuspendLayout();
-            this.tabTools.SuspendLayout();
-            this.ToolsFlowLayout.SuspendLayout();
+            this.LMBControls.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.mouseControls)).BeginInit();
+            this.mouseControls.Panel1.SuspendLayout();
+            this.mouseControls.Panel2.SuspendLayout();
+            this.mouseControls.SuspendLayout();
+            this.RMBControls.SuspendLayout();
             this.SuspendLayout();
             // 
             // Container_Shapes
@@ -83,6 +91,8 @@
             this.treeView.Dock = System.Windows.Forms.DockStyle.Left;
             this.treeView.FullRowSelect = true;
             this.treeView.HideSelection = false;
+            this.treeView.HotTracking = true;
+            this.treeView.Indent = 12;
             this.treeView.Location = new System.Drawing.Point(0, 0);
             this.treeView.Name = "treeView";
             this.treeView.Size = new System.Drawing.Size(145, 748);
@@ -129,13 +139,13 @@
             this.ZoomOut.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.ZoomOut.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ZoomOut.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Bold);
-            this.ZoomOut.Location = new System.Drawing.Point(759, 49);
+            this.ZoomOut.Location = new System.Drawing.Point(853, 54);
             this.ZoomOut.Name = "ZoomOut";
             this.ZoomOut.Size = new System.Drawing.Size(32, 32);
             this.ZoomOut.TabIndex = 2;
             this.ZoomOut.Text = "-";
             this.ZoomOut.UseVisualStyleBackColor = false;
-            this.ZoomOut.Click += new System.EventHandler(this.button1_Click);
+            this.ZoomOut.Click += new System.EventHandler(this.ZoomOut_Click);
             // 
             // ZoomIn
             // 
@@ -143,13 +153,13 @@
             this.ZoomIn.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
             this.ZoomIn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ZoomIn.Font = new System.Drawing.Font("Consolas", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ZoomIn.Location = new System.Drawing.Point(804, 49);
+            this.ZoomIn.Location = new System.Drawing.Point(898, 54);
             this.ZoomIn.Name = "ZoomIn";
             this.ZoomIn.Size = new System.Drawing.Size(32, 32);
             this.ZoomIn.TabIndex = 3;
             this.ZoomIn.Text = "+";
             this.ZoomIn.UseVisualStyleBackColor = false;
-            this.ZoomIn.Click += new System.EventHandler(this.button2_Click);
+            this.ZoomIn.Click += new System.EventHandler(this.ZoomIn_Click);
             // 
             // AdjustSnapDistance
             // 
@@ -161,7 +171,7 @@
             0,
             0,
             262144});
-            this.AdjustSnapDistance.Location = new System.Drawing.Point(666, 54);
+            this.AdjustSnapDistance.Location = new System.Drawing.Point(760, 59);
             this.AdjustSnapDistance.Maximum = new decimal(new int[] {
             1,
             0,
@@ -186,7 +196,7 @@
             // 
             this.ZoomScale.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.ZoomScale.Font = new System.Drawing.Font("Consolas", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ZoomScale.Location = new System.Drawing.Point(759, 88);
+            this.ZoomScale.Location = new System.Drawing.Point(853, 93);
             this.ZoomScale.MaxLength = 100;
             this.ZoomScale.Name = "ZoomScale";
             this.ZoomScale.ReadOnly = true;
@@ -314,7 +324,7 @@
             // 
             this.label_Snap.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label_Snap.Font = new System.Drawing.Font("Consolas", 8F);
-            this.label_Snap.Location = new System.Drawing.Point(659, 34);
+            this.label_Snap.Location = new System.Drawing.Point(753, 39);
             this.label_Snap.Name = "label_Snap";
             this.label_Snap.Size = new System.Drawing.Size(92, 13);
             this.label_Snap.TabIndex = 7;
@@ -325,78 +335,183 @@
             // 
             this.label_Zoom.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label_Zoom.Font = new System.Drawing.Font("Consolas", 8F);
-            this.label_Zoom.Location = new System.Drawing.Point(757, 34);
+            this.label_Zoom.Location = new System.Drawing.Point(851, 39);
             this.label_Zoom.Name = "label_Zoom";
             this.label_Zoom.Size = new System.Drawing.Size(80, 13);
             this.label_Zoom.TabIndex = 8;
             this.label_Zoom.Text = "Grid Zoom";
             this.label_Zoom.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // TabContainer
+            // LMBControls
             // 
-            this.TabContainer.Controls.Add(this.tabTools);
-            this.TabContainer.Controls.Add(this.TabExport);
-            this.TabContainer.Dock = System.Windows.Forms.DockStyle.Right;
-            this.TabContainer.Location = new System.Drawing.Point(845, 24);
-            this.TabContainer.Name = "TabContainer";
-            this.TabContainer.SelectedIndex = 0;
-            this.TabContainer.Size = new System.Drawing.Size(100, 748);
-            this.TabContainer.TabIndex = 9;
+            this.LMBControls.AutoSize = false;
+            this.LMBControls.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.LMBControls.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LMBControls.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.LMBControls.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tool_MoveDim,
+            this.tool_AddDim,
+            this.tool_BasicSelect});
+            this.LMBControls.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
+            this.LMBControls.Location = new System.Drawing.Point(0, 0);
+            this.LMBControls.Name = "LMBControls";
+            this.LMBControls.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.LMBControls.Size = new System.Drawing.Size(400, 55);
+            this.LMBControls.Stretch = true;
+            this.LMBControls.TabIndex = 12;
+            this.LMBControls.Text = "toolStrip1";
             // 
-            // tabTools
+            // tool_MoveDim
             // 
-            this.tabTools.Controls.Add(this.ToolsFlowLayout);
-            this.tabTools.Location = new System.Drawing.Point(4, 22);
-            this.tabTools.Name = "tabTools";
-            this.tabTools.Padding = new System.Windows.Forms.Padding(3);
-            this.tabTools.Size = new System.Drawing.Size(92, 722);
-            this.tabTools.TabIndex = 0;
-            this.tabTools.Text = "Tools";
-            this.tabTools.UseVisualStyleBackColor = true;
+            this.tool_MoveDim.AutoSize = false;
+            this.tool_MoveDim.CheckOnClick = true;
+            this.tool_MoveDim.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tool_MoveDim.Image = ((System.Drawing.Image)(resources.GetObject("tool_MoveDim.Image")));
+            this.tool_MoveDim.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.tool_MoveDim.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tool_MoveDim.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tool_MoveDim.Name = "tool_MoveDim";
+            this.tool_MoveDim.Size = new System.Drawing.Size(55, 55);
+            this.tool_MoveDim.Text = "MoveDim";
+            this.tool_MoveDim.Click += new System.EventHandler(this.tool_MoveDim_Click_1);
             // 
-            // ToolsFlowLayout
+            // tool_AddDim
             // 
-            this.ToolsFlowLayout.Controls.Add(this.togg2PLine);
-            this.ToolsFlowLayout.Controls.Add(this.toggMoveDim);
-            this.ToolsFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ToolsFlowLayout.Location = new System.Drawing.Point(3, 3);
-            this.ToolsFlowLayout.Name = "ToolsFlowLayout";
-            this.ToolsFlowLayout.Size = new System.Drawing.Size(86, 716);
-            this.ToolsFlowLayout.TabIndex = 0;
+            this.tool_AddDim.AutoSize = false;
+            this.tool_AddDim.CheckOnClick = true;
+            this.tool_AddDim.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tool_AddDim.Image = ((System.Drawing.Image)(resources.GetObject("tool_AddDim.Image")));
+            this.tool_AddDim.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.tool_AddDim.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tool_AddDim.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tool_AddDim.Name = "tool_AddDim";
+            this.tool_AddDim.Size = new System.Drawing.Size(55, 55);
+            this.tool_AddDim.Text = "AddDim";
+            this.tool_AddDim.Click += new System.EventHandler(this.tool_AddDim_Click);
             // 
-            // togg2PLine
+            // tool_BasicSelect
             // 
-            this.togg2PLine.Appearance = System.Windows.Forms.Appearance.Button;
-            this.togg2PLine.Location = new System.Drawing.Point(3, 3);
-            this.togg2PLine.Name = "togg2PLine";
-            this.togg2PLine.Size = new System.Drawing.Size(80, 40);
-            this.togg2PLine.TabIndex = 12;
-            this.togg2PLine.Text = "2P Line";
-            this.togg2PLine.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.togg2PLine.UseVisualStyleBackColor = true;
-            this.togg2PLine.Click += new System.EventHandler(this.togg2PLine_Click);
+            this.tool_BasicSelect.AutoSize = false;
+            this.tool_BasicSelect.CheckOnClick = true;
+            this.tool_BasicSelect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tool_BasicSelect.Image = ((System.Drawing.Image)(resources.GetObject("tool_BasicSelect.Image")));
+            this.tool_BasicSelect.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.tool_BasicSelect.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tool_BasicSelect.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tool_BasicSelect.Name = "tool_BasicSelect";
+            this.tool_BasicSelect.Size = new System.Drawing.Size(55, 55);
+            this.tool_BasicSelect.Text = "Select";
+            this.tool_BasicSelect.Click += new System.EventHandler(this.tool_BasicSelect_Click);
             // 
-            // toggMoveDim
+            // mouseControls
             // 
-            this.toggMoveDim.Appearance = System.Windows.Forms.Appearance.Button;
-            this.toggMoveDim.Location = new System.Drawing.Point(3, 49);
-            this.toggMoveDim.Name = "toggMoveDim";
-            this.toggMoveDim.Size = new System.Drawing.Size(80, 40);
-            this.toggMoveDim.TabIndex = 13;
-            this.toggMoveDim.Text = "Move Dim";
-            this.toggMoveDim.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.toggMoveDim.UseVisualStyleBackColor = true;
-            this.toggMoveDim.Click += new System.EventHandler(this.toggMoveDim_Click);
+            this.mouseControls.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.mouseControls.Location = new System.Drawing.Point(145, 717);
+            this.mouseControls.Margin = new System.Windows.Forms.Padding(2);
+            this.mouseControls.Name = "mouseControls";
             // 
-            // TabExport
+            // mouseControls.Panel1
             // 
-            this.TabExport.Location = new System.Drawing.Point(4, 22);
-            this.TabExport.Name = "TabExport";
-            this.TabExport.Padding = new System.Windows.Forms.Padding(3);
-            this.TabExport.Size = new System.Drawing.Size(92, 722);
-            this.TabExport.TabIndex = 1;
-            this.TabExport.Text = "Other";
-            this.TabExport.UseVisualStyleBackColor = true;
+            this.mouseControls.Panel1.Controls.Add(this.LMBControls);
+            // 
+            // mouseControls.Panel2
+            // 
+            this.mouseControls.Panel2.Controls.Add(this.RMBControls);
+            this.mouseControls.Size = new System.Drawing.Size(800, 55);
+            this.mouseControls.SplitterDistance = 400;
+            this.mouseControls.SplitterWidth = 5;
+            this.mouseControls.TabIndex = 13;
+            // 
+            // RMBControls
+            // 
+            this.RMBControls.AutoSize = false;
+            this.RMBControls.BackColor = System.Drawing.Color.DarkSeaGreen;
+            this.RMBControls.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.RMBControls.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.RMBControls.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tool_AddPt,
+            this.tool_2PRect,
+            this.tool_2PLine,
+            this.tool_2PDim,
+            this.tool_2PCir});
+            this.RMBControls.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
+            this.RMBControls.Location = new System.Drawing.Point(0, 0);
+            this.RMBControls.Name = "RMBControls";
+            this.RMBControls.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.RMBControls.Size = new System.Drawing.Size(395, 55);
+            this.RMBControls.Stretch = true;
+            this.RMBControls.TabIndex = 10;
+            this.RMBControls.Text = "toolStrip";
+            // 
+            // tool_AddPt
+            // 
+            this.tool_AddPt.AutoSize = false;
+            this.tool_AddPt.CheckOnClick = true;
+            this.tool_AddPt.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tool_AddPt.Image = ((System.Drawing.Image)(resources.GetObject("tool_AddPt.Image")));
+            this.tool_AddPt.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.tool_AddPt.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tool_AddPt.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tool_AddPt.Name = "tool_AddPt";
+            this.tool_AddPt.Size = new System.Drawing.Size(55, 55);
+            this.tool_AddPt.Text = "Add Point";
+            this.tool_AddPt.Click += new System.EventHandler(this.tool_AddPt_Click);
+            // 
+            // tool_2PRect
+            // 
+            this.tool_2PRect.AutoSize = false;
+            this.tool_2PRect.CheckOnClick = true;
+            this.tool_2PRect.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tool_2PRect.Image = ((System.Drawing.Image)(resources.GetObject("tool_2PRect.Image")));
+            this.tool_2PRect.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.tool_2PRect.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tool_2PRect.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tool_2PRect.Name = "tool_2PRect";
+            this.tool_2PRect.Size = new System.Drawing.Size(55, 55);
+            this.tool_2PRect.Text = "Make 2P Rect";
+            this.tool_2PRect.Click += new System.EventHandler(this.tool_2PRect_Click);
+            // 
+            // tool_2PLine
+            // 
+            this.tool_2PLine.AutoSize = false;
+            this.tool_2PLine.CheckOnClick = true;
+            this.tool_2PLine.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tool_2PLine.Image = ((System.Drawing.Image)(resources.GetObject("tool_2PLine.Image")));
+            this.tool_2PLine.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.tool_2PLine.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tool_2PLine.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tool_2PLine.Name = "tool_2PLine";
+            this.tool_2PLine.Size = new System.Drawing.Size(55, 55);
+            this.tool_2PLine.Text = "Make 2P Line";
+            this.tool_2PLine.Click += new System.EventHandler(this.tool_2PLine_Click);
+            // 
+            // tool_2PDim
+            // 
+            this.tool_2PDim.AutoSize = false;
+            this.tool_2PDim.CheckOnClick = true;
+            this.tool_2PDim.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tool_2PDim.Image = ((System.Drawing.Image)(resources.GetObject("tool_2PDim.Image")));
+            this.tool_2PDim.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.tool_2PDim.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tool_2PDim.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tool_2PDim.Name = "tool_2PDim";
+            this.tool_2PDim.Size = new System.Drawing.Size(55, 55);
+            this.tool_2PDim.Text = "Make 2P Dim";
+            this.tool_2PDim.Click += new System.EventHandler(this.tool_2PDim_Click);
+            // 
+            // tool_2PCir
+            // 
+            this.tool_2PCir.AutoSize = false;
+            this.tool_2PCir.CheckOnClick = true;
+            this.tool_2PCir.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tool_2PCir.Image = ((System.Drawing.Image)(resources.GetObject("tool_2PCir.Image")));
+            this.tool_2PCir.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.tool_2PCir.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tool_2PCir.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tool_2PCir.Name = "tool_2PCir";
+            this.tool_2PCir.Size = new System.Drawing.Size(55, 55);
+            this.tool_2PCir.Text = "Make 2P Circle";
+            this.tool_2PCir.Click += new System.EventHandler(this.tool_2PCir_Click);
             // 
             // BasicCad_Form
             // 
@@ -404,7 +519,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(945, 912);
-            this.Controls.Add(this.TabContainer);
+            this.Controls.Add(this.mouseControls);
             this.Controls.Add(this.label_Zoom);
             this.Controls.Add(this.label_Snap);
             this.Controls.Add(this.ZoomScale);
@@ -418,7 +533,7 @@
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.MaximumSize = new System.Drawing.Size(1920, 1080);
-            this.MinimumSize = new System.Drawing.Size(961, 950);
+            this.MinimumSize = new System.Drawing.Size(500, 500);
             this.Name = "BasicCad_Form";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "BasicCAD";
@@ -431,15 +546,21 @@
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.BasicCad_Form_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.BasicCad_Form_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.BasicCad_Form_MouseUp);
+            this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.BasicCad_Form_MouseScroll);
             this.Container_Shapes.ResumeLayout(false);
             this.Container_Control.ResumeLayout(false);
             this.Container_Control.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AdjustSnapDistance)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.TabContainer.ResumeLayout(false);
-            this.tabTools.ResumeLayout(false);
-            this.ToolsFlowLayout.ResumeLayout(false);
+            this.LMBControls.ResumeLayout(false);
+            this.LMBControls.PerformLayout();
+            this.mouseControls.Panel1.ResumeLayout(false);
+            this.mouseControls.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.mouseControls)).EndInit();
+            this.mouseControls.ResumeLayout(false);
+            this.RMBControls.ResumeLayout(false);
+            this.RMBControls.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -469,13 +590,18 @@
         private System.Windows.Forms.TreeView treeView;
         private System.Windows.Forms.Label label_Snap;
         private System.Windows.Forms.Label label_Zoom;
-        private System.Windows.Forms.TabControl TabContainer;
-        private System.Windows.Forms.TabPage tabTools;
-        private System.Windows.Forms.TabPage TabExport;
-        private System.Windows.Forms.FlowLayoutPanel ToolsFlowLayout;
         private System.Windows.Forms.ToolStripMenuItem onlyActiveLineToolStripMenuItem;
-        private System.Windows.Forms.CheckBox togg2PLine;
-        private System.Windows.Forms.CheckBox toggMoveDim;
+        private System.Windows.Forms.ToolStrip LMBControls;
+        private System.Windows.Forms.SplitContainer mouseControls;
+        private System.Windows.Forms.ToolStrip RMBControls;
+        private System.Windows.Forms.ToolStripButton tool_2PLine;
+        private System.Windows.Forms.ToolStripButton tool_2PRect;
+        private System.Windows.Forms.ToolStripButton tool_MoveDim;
+        private System.Windows.Forms.ToolStripButton tool_AddDim;
+        private System.Windows.Forms.ToolStripButton tool_AddPt;
+        private System.Windows.Forms.ToolStripButton tool_BasicSelect;
+        private System.Windows.Forms.ToolStripButton tool_2PDim;
+        private System.Windows.Forms.ToolStripButton tool_2PCir;
     }
 }
 

@@ -14,6 +14,7 @@ namespace BasicCad
     {
         public TextBoxStreamWriter _writer;
         public int clicksNeeded { get; set; }
+        public mousePan global_mousePan = null;
 
         //Create CadSystem
         CadSystem cadSystem;
@@ -22,7 +23,6 @@ namespace BasicCad
         {
             InitializeComponent();
         }
-
 
         /**********************
          * INPUT
@@ -81,9 +81,7 @@ namespace BasicCad
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
             treeView_Init();
-            togg2PLine_Click(sender, e);
         }
-
 
         private void treeView_Init()
         {
@@ -146,6 +144,7 @@ namespace BasicCad
                 else if (oSubNode.Nodes.Count > 0)
                 {
                     returnNode = FindParentNodesRecursive(oSubNode, NameSearchFor);
+                    if (returnNode != null) break;
                 }
             }
             return returnNode;
@@ -209,6 +208,17 @@ namespace BasicCad
 
         private void BasicCad_Paint(object sender, PaintEventArgs e)
         {
+            PointF cursPos = this.PointToClient(Cursor.Position);
+
+            if (global_mousePan != null)
+            {
+                PointF fakeOrigin = new PointF(cursPos.X - global_mousePan.start.X, cursPos.Y - global_mousePan.start.Y);
+                cadSystem.gridSystem.DrawOrigin(e.Graphics);
+                cadSystem.gridSystem.DrawGrid(e.Graphics, fakeOrigin);
+                cadSystem.gridSystem.DrawCurs(e.Graphics, fakeOrigin);
+                cadSystem.gridSystem.DrawOrigin(e.Graphics, fakeOrigin);
+                //return;
+            }
             e.Graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
             e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Default;
@@ -220,7 +230,6 @@ namespace BasicCad
 
             if (cadSystem.clickCache.count() > 0)
             {
-                PointF cursPos = this.PointToClient(Cursor.Position);
                 cadSystem.gridSystem.DrawLineToCursor(e.Graphics, cadSystem.gridSystem.GetCursorReal(), cursPos);
             }
             cadSystem.gridSystem.DrawCurs(e.Graphics);
@@ -234,7 +243,6 @@ namespace BasicCad
         private void BasicCad_Click(object sender, EventArgs e)
         {
             PointF cursPos = this.PointToClient(Cursor.Position);
-
             if (cadSystem.gridSystem.IsWithinCurrentBounds(cursPos))
             {
                 MouseEventArgs me = (MouseEventArgs)e;
@@ -244,6 +252,10 @@ namespace BasicCad
                     if (!(cadSystem.InProcess))
                     {
                         cadSystem.gridSystem.SnapCursorToPoint(cursPos);
+                        if (tool_AddDim.Checked == true)
+                        {
+                            cadSystem.ParseInput("D");
+                        }
                     }
                 }
                 else if (me.Button == MouseButtons.Right)
@@ -253,8 +265,39 @@ namespace BasicCad
                     //if nothing is in process
                     if (!(cadSystem.InProcess))
                     {
+                        //TODO: Move these into the tool functions themselves, because this is dirty, and I'm writing everything twice
                         //CHECK ACTIVE TOOL
-                        if (togg2PLine.Checked)
+                        if (tool_2PLine.Checked)
+                        {
+                            cadSystem.clickCache.clear();
+                            cadSystem.clickCache.enqueue(click);
+                            cadSystem.InProcess = true;
+                            clicksNeeded = 2;
+                        }
+                        //CHECK ACTIVE TOOL
+                        if (tool_2PRect.Checked)
+                        {
+                            cadSystem.clickCache.clear();
+                            cadSystem.clickCache.enqueue(click);
+                            cadSystem.InProcess = true;
+                            clicksNeeded = 2;
+                        }
+                        //CHECK ACTIVE TOOL
+                        if (tool_AddPt.Checked)
+                        {
+                            cadSystem.clickCache.clear();
+                            cadSystem.ParseInput("P");
+                        }
+                        //CHECK ACTIVE TOOL
+                        if (tool_2PDim.Checked)
+                        {
+                            cadSystem.clickCache.clear();
+                            cadSystem.clickCache.enqueue(click);
+                            cadSystem.InProcess = true;
+                            clicksNeeded = 2;
+                        }
+                        //CHECK ACTIVE TOOL
+                        if (tool_2PCir.Checked)
                         {
                             cadSystem.clickCache.clear();
                             cadSystem.clickCache.enqueue(click);
@@ -271,17 +314,27 @@ namespace BasicCad
                     if (cadSystem.clickCache.count() == clicksNeeded)
                     {
                         //CHECK ACTIVE TOOL
-                        if (togg2PLine.Checked)
+                        if (tool_2PLine.Checked)
                         {
                             Make2PLine(sender, e);
                         }
+                        //CHECK ACTIVE TOOL
+                        if (tool_2PRect.Checked)
+                        {
+                            Make2PRect(sender, e);
+                        }
+                        //CHECK ACTIVE TOOL
+                        if (tool_2PDim.Checked)
+                        {
+                            Make2PDim(sender, e);
+                        }
+                        //CHECK ACTIVE TOOL
+                        if (tool_2PCir.Checked)
+                        {
+                            Make2PCir(sender, e);
+                        }
                     }
                 }
-                else if (me.Button == MouseButtons.Middle)
-                {
-                    cadSystem.gridSystem.SnapOriginToPoint(cursPos);
-                }
-                Invalidate();
             }
         }
 
@@ -305,6 +358,7 @@ namespace BasicCad
             cadSystem.gridSystem.relativePositioning = prevPositioning;
             treeView_Update();
         }
+
         private void Make2PRect(object sender, EventArgs e)
         {
             bool prevPositioning = cadSystem.gridSystem.relativePositioning;
@@ -312,8 +366,34 @@ namespace BasicCad
             PointF P1 = cadSystem.clickCache.dequeue();
             PointF P2 = cadSystem.clickCache.dequeue();
             cadSystem.InProcess = false;
-            string RectInput = "RT " + P1.X.ToString() + " " + P1.Y.ToString() + " " + P2.X.ToString() + " " + P2.Y.ToString();
+            string RectInput = "RT " + P1.X.ToString() + " " + P1.Y.ToString() + " " + (P2.X - P1.X).ToString() + " " + (P2.Y - P1.Y).ToString();
             cadSystem.ParseInput(RectInput);
+            cadSystem.gridSystem.relativePositioning = prevPositioning;
+            treeView_Update();
+        }
+
+        private void Make2PDim(object sender, EventArgs e)
+        {
+            bool prevPositioning = cadSystem.gridSystem.relativePositioning;
+            cadSystem.gridSystem.relativePositioning = false;
+            PointF P1 = cadSystem.clickCache.dequeue();
+            PointF P2 = cadSystem.clickCache.dequeue();
+            cadSystem.InProcess = false;
+            string DimInput = "DIM " + P1.X.ToString() + " " + P1.Y.ToString() + " " + P2.X.ToString() + " " + P2.Y.ToString();
+            cadSystem.ParseInput(DimInput);
+            cadSystem.gridSystem.relativePositioning = prevPositioning;
+            treeView_Update();
+        }
+        private void Make2PCir(object sender, EventArgs e)
+        {
+            bool prevPositioning = cadSystem.gridSystem.relativePositioning;
+            cadSystem.gridSystem.relativePositioning = false;
+            PointF P1 = cadSystem.clickCache.dequeue();
+            PointF P2 = cadSystem.clickCache.dequeue();
+            float R = (float)GridSystem.GetDistanceP2P(P1, P2);
+            cadSystem.InProcess = false;
+            string DimInput = "E " + P1.X.ToString() + " " + P1.Y.ToString() + " " + R.ToString();
+            cadSystem.ParseInput(DimInput);
             cadSystem.gridSystem.relativePositioning = prevPositioning;
             treeView_Update();
         }
@@ -341,6 +421,7 @@ namespace BasicCad
                 deleteToolStripMenuItem_Click(sender, e);
             }
         }
+
         private void CancelCommand()
         {
             if (cadSystem.InProcess)
@@ -351,14 +432,15 @@ namespace BasicCad
                 Invalidate();
             }
         }
-        private void button1_Click(object sender, EventArgs e)
+
+        private void ZoomOut_Click(object sender, EventArgs e)
         {
             cadSystem.gridSystem.ZoomOut();
             ZoomScale.Text = (cadSystem.gridSystem.getZoomScale() * 100).ToString() + "%";
             Invalidate();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void ZoomIn_Click(object sender, EventArgs e)
         {
             cadSystem.gridSystem.ZoomIn();
             ZoomScale.Text = (cadSystem.gridSystem.getZoomScale() * 100).ToString() + "%";
@@ -377,9 +459,9 @@ namespace BasicCad
         private void BasicCad_Form_MouseDown(object sender, MouseEventArgs e)
         {
             PointF cursPos = this.PointToClient(Cursor.Position);
-            if (e.Button == MouseButtons.Left && toggMoveDim.Checked)
+            if (e.Button == MouseButtons.Left && tool_MoveDim.Checked)
             {
-                if (!cadSystem.shapeSystem.ActivateShapeUnderPoint<ShapeSystem.LineDimension>(cursPos))
+                if (!cadSystem.shapeSystem.ActivateShapeUnderPoint<ShapeSystem.LinearDimension>(cursPos))
                 {
                     cadSystem.shapeSystem.DeselectActiveShapes();
                 }
@@ -391,32 +473,66 @@ namespace BasicCad
                     cadSystem.shapeSystem.DeselectActiveShapes();
                 }
             }
+            else if (e.Button == MouseButtons.Middle)
+            {
+                if (global_mousePan == null)
+                {
+                    this.Cursor = Cursors.NoMove2D;
+                    global_mousePan = mousePan.mousePanGrid(cursPos);
+                }
+            }
         }
 
         private void BasicCad_Form_MouseUp(object sender, MouseEventArgs e)
         {
-            MouseEventArgs me = (MouseEventArgs)e;
+            PointF cursPos = this.PointToClient(Cursor.Position);
+            if (global_mousePan != null)
+            {
+                global_mousePan.end = cursPos;
+                global_mousePan = null;
+                this.Cursor = Cursors.Default;
+            }
+            Invalidate();
         }
 
         private void BasicCad_Form_MouseMove(object sender, MouseEventArgs e)
         {
+            PointF cursPos = this.PointToClient(Cursor.Position);
             if (cadSystem.clickCache.count() > 0)
             {
                 PointF start = cadSystem.gridSystem.GetCursorReal();
-                PointF end = this.PointToClient(Cursor.Position);
-                RectangleF invalidrect = new RectangleF(Math.Min(start.X, end.X) - 30,
-                               Math.Min(start.Y, end.Y) - 30,
-                               Math.Abs(start.X - end.X) + 60,
-                               Math.Abs(start.Y - end.Y) + 60);
+                RectangleF invalidrect = new RectangleF(Math.Min(start.X, cursPos.X) - 30,
+                               Math.Min(start.Y, cursPos.Y) - 30,
+                               Math.Abs(start.X - cursPos.X) + 60,
+                               Math.Abs(start.Y - cursPos.Y) + 60);
                 Invalidate(new Region(invalidrect));
             }
-            if (toggMoveDim.Checked == true && cadSystem.shapeSystem.GetActiveShape() is ShapeSystem.LineDimension)
+            if (tool_MoveDim.Checked == true && cadSystem.shapeSystem.GetActiveShape() is ShapeSystem.LinearDimension)
             {
                 if (e.Button == MouseButtons.Left)
                 {
                     cadSystem.shapeSystem.AdjustDimByRealCursor(this.PointToClient(Cursor.Position), cadSystem.shapeSystem.GetActiveShape().IdShape);
                     Invalidate();
                 }
+            }
+            if (global_mousePan != null)
+            {
+                Invalidate();
+            }
+        }
+
+        private void BasicCad_Form_MouseScroll(object sender, MouseEventArgs e)
+        {
+            // If the mouse wheel delta is positive, move the box up.
+            if (e.Delta > 0)
+            {
+                ZoomIn_Click(sender, e);
+            }
+
+            // If the mouse wheel delta is negative, move the box down.
+            if (e.Delta < 0)
+            {
+                ZoomOut_Click(sender, e);
             }
         }
 
@@ -497,27 +613,96 @@ namespace BasicCad
             Invalidate();
         }
 
-        private void uncheckAllInToolStrip()
+        private void uncheckAllRMBTools()
         {
             CancelCommand();
-            foreach (CheckBox C in this.ToolsFlowLayout.Controls)
+            foreach (ToolStripButton B in this.RMBControls.Items)
             {
-                    C.Checked = false;
+                B.Checked = false;
+            }
+        }
+        private void uncheckAllLMBTools()
+        {
+            //CancelCommand(); //Hopefully we don't need to
+            foreach (ToolStripButton B in this.LMBControls.Items)
+            {
+                B.Checked = false;
             }
         }
 
-        private void togg2PLine_Click(object sender, EventArgs e)
+        private void tool_2PLine_Click(object sender, EventArgs e)
         {
-            uncheckAllInToolStrip();
-            togg2PLine.Checked = !(togg2PLine.Checked);
+            uncheckAllRMBTools();
+            tool_2PLine.Checked = !(tool_2PLine.Checked);
         }
 
-        private void toggMoveDim_Click(object sender, EventArgs e)
+        private void tool_2PRect_Click(object sender, EventArgs e)
         {
-            uncheckAllInToolStrip();
-            toggMoveDim.Checked = true;
+            uncheckAllRMBTools();
+            tool_2PRect.Checked = !(tool_2PRect.Checked);
+        }
+
+        private void tool_AddPt_Click(object sender, EventArgs e)
+        {
+            uncheckAllRMBTools();
+            tool_AddPt.Checked = !(tool_AddPt.Checked);
+        }
+
+        private void tool_AddDim_Click(object sender, EventArgs e)
+        {
+            uncheckAllLMBTools();
+            tool_AddDim.Checked = !(tool_AddDim.Checked);
+        }
+
+        private void tool_BasicSelect_Click(object sender, EventArgs e)
+        {
+            uncheckAllLMBTools();
+            tool_BasicSelect.Checked = !(tool_BasicSelect.Checked);
+        }
+
+        private void tool_MoveDim_Click_1(object sender, EventArgs e)
+        {
+            uncheckAllLMBTools();
+            tool_MoveDim.Checked = !(tool_MoveDim.Checked);
+        }
+
+        private void tool_2PDim_Click(object sender, EventArgs e)
+        {
+            uncheckAllRMBTools();
+            tool_2PDim.Checked = !(tool_2PDim.Checked);
+        }
+
+        private void tool_2PCir_Click(object sender, EventArgs e)
+        {
+            uncheckAllRMBTools();
+            tool_2PCir.Checked = !(tool_2PCir.Checked);
         }
     }
+
+    public class mousePan
+    {
+        public PointF start;
+        PointF delta;
+        public PointF end {
+            set
+            {
+                this.delta =
+                    new PointF(value.X - start.X,value.Y - start.Y );
+                ShapeSystem.gridSystem.MoveOriginByDelta_Real(delta);
+            }
+        }
+        //GridSystem grid;
+        public mousePan(PointF start)
+        {
+            this.start = start;
+            //this.grid = grid;
+        }
+        public static mousePan mousePanGrid(PointF start)
+        {
+            return new mousePan(start);
+        }
+    }
+
 }
 
 namespace ConsoleRedirection
