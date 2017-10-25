@@ -1,6 +1,9 @@
 # WinFormCAD
 Uhh.. Yeah, So I needed a precise (linear) drawing program while I was at work, and couldnt install anything that did the trick.
 
+Updates! 20171019:
+![adjustibledimms](https://user-images.githubusercontent.com/21973290/31795271-2bfef81e-b4f3-11e7-80af-55a8e959051e.png)
+
 Edit:  Updated with snap points, line selection via click, saving and loading designs (awesome!), a context menu view options for snap points/grid/origin; you can now cancel an in progress line with ESC, you may now press the delete key to delete active objects (or access delete under the Edit -> delete in the top menu)
 
 ![currentphoto](https://user-images.githubusercontent.com/21973290/31693555-39f24336-b36d-11e7-811b-601b57821f7d.PNG)
