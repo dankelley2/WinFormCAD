@@ -71,7 +71,7 @@ namespace BasicCad
         private void BasicCad_Load(object sender, EventArgs e)
         {
             cadSystem = new CadSystem(new PointF(145, 24), this.Size, .25F, 96);
-            cadSystem.shapeSystem.setBaseColors(
+            ShapeSystem.setBaseColors(
                 new Pen(Color.FromArgb(255, 20, 20, 20), 2),
                 new Pen(Color.OrangeRed, 2));
             AdjustSnapDistance.Value = (decimal)cadSystem.gridSystem.getGridIncrements();
@@ -225,7 +225,7 @@ namespace BasicCad
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             cadSystem.gridSystem.DrawGrid(e.Graphics);
             cadSystem.gridSystem.DrawOrigin(e.Graphics);
-            cadSystem.shapeSystem.RefreshAll(e.Graphics);
+            ShapeSystem.RefreshAll(e.Graphics);
             cadSystem.gridSystem.DrawSnaps(e.Graphics);
 
             if (cadSystem.clickCache.count() > 0)
@@ -461,16 +461,16 @@ namespace BasicCad
             PointF cursPos = this.PointToClient(Cursor.Position);
             if (e.Button == MouseButtons.Left && tool_MoveDim.Checked)
             {
-                if (!cadSystem.shapeSystem.ActivateShapeUnderPoint<ShapeSystem.LinearDimension>(cursPos))
+                if (!ShapeSystem.ActivateShapeUnderPoint<LinearDimension>(cursPos))
                 {
-                    cadSystem.shapeSystem.DeselectActiveShapes();
+                    ShapeSystem.DeselectActiveShapes();
                 }
             }
             else if (e.Button == MouseButtons.Left)
             {
-                if (!cadSystem.shapeSystem.ActivateShapeUnderPoint(cursPos))
+                if (!ShapeSystem.ActivateShapeUnderPoint(cursPos))
                 {
-                    cadSystem.shapeSystem.DeselectActiveShapes();
+                    ShapeSystem.DeselectActiveShapes();
                 }
             }
             else if (e.Button == MouseButtons.Middle)
@@ -507,11 +507,11 @@ namespace BasicCad
                                Math.Abs(start.Y - cursPos.Y) + 60);
                 Invalidate(new Region(invalidrect));
             }
-            if (tool_MoveDim.Checked == true && cadSystem.shapeSystem.GetActiveShape() is ShapeSystem.LinearDimension)
+            if (tool_MoveDim.Checked == true && ShapeSystem.GetActiveShape() is LinearDimension)
             {
                 if (e.Button == MouseButtons.Left)
                 {
-                    cadSystem.shapeSystem.AdjustDimByRealCursor(this.PointToClient(Cursor.Position), cadSystem.shapeSystem.GetActiveShape().IdShape);
+                    ShapeSystem.AdjustDimByRealCursor(this.PointToClient(Cursor.Position), ShapeSystem.GetActiveShape().IdShape);
                     Invalidate();
                 }
             }
@@ -570,7 +570,7 @@ namespace BasicCad
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (cadSystem.shapeSystem.RemoveActiveShape())
+            if (ShapeSystem.RemoveActiveShape())
             {
                 treeView_Update();
                 Invalidate();
@@ -603,7 +603,7 @@ namespace BasicCad
         private void treeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
             if (e.Node.Name == "MAIN_Shapes") { return; }
-            ShapeSystem.MakeActiveShape(cadSystem.shapeSystem.GetShapeById(Convert.ToInt16(e.Node.Name)));
+            ShapeSystem.MakeActiveShape(ShapeSystem.GetShapeById(Convert.ToInt16(e.Node.Name)));
             Invalidate();
         }
 
