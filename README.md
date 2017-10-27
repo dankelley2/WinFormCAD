@@ -1,6 +1,33 @@
 # WinFormCAD
 Uhh.. Yeah, So I needed a precise (linear) drawing program while I was at work, and couldnt install anything that did the trick.
 
+Coming along nicely! 20171026:
+![currentphoto](https://user-images.githubusercontent.com/21973290/32082260-6b16d8ba-ba88-11e7-9ad1-b43e6e177627.PNG)
+
+-Dimensions now moveable
+-Center Radius circles now show tangent and intersection snap points for lines
+-2P Dimensions without lines
+-LMB and RMB tool menus separated
+-Tree view implemented for parent/child shapes
+-Refactored DLL codebase more than a few times
+-Grid panning via MMB
+-Grid zoom via MMB Scroll
+-Rectangles fillable with ARGB colors
+
+In process:
+-NGon shapes/Paths
+-Offset shapes / lines / paths
+-predictive snap points
+-export to pdf
+
+To do:
+-Arcs
+-Annotation "shapes"
+-Color picker/fill tool
+-Icons for Relative/Global positioning commands
+-Improve 1990's look
+-learn more maths via 3Blue1Brown 
+
 Updates! 20171019:
 ![adjustibledimms](https://user-images.githubusercontent.com/21973290/31795271-2bfef81e-b4f3-11e7-80af-55a8e959051e.png)
 
