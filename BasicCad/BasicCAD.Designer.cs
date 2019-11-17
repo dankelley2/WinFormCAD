@@ -64,6 +64,8 @@
             this.tool_2PLine = new System.Windows.Forms.ToolStripButton();
             this.tool_2PDim = new System.Windows.Forms.ToolStripButton();
             this.tool_2PCir = new System.Windows.Forms.ToolStripButton();
+            this.label_lmb = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.Container_Shapes.SuspendLayout();
             this.Container_Control.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.AdjustSnapDistance)).BeginInit();
@@ -513,12 +515,34 @@
             this.tool_2PCir.Text = "Make 2P Circle";
             this.tool_2PCir.Click += new System.EventHandler(this.tool_2PCir_Click);
             // 
+            // label_lmb
+            // 
+            this.label_lmb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label_lmb.AutoSize = true;
+            this.label_lmb.Location = new System.Drawing.Point(151, 702);
+            this.label_lmb.Name = "label_lmb";
+            this.label_lmb.Size = new System.Drawing.Size(149, 13);
+            this.label_lmb.TabIndex = 14;
+            this.label_lmb.Text = "Left Mouse button (LMB) tools";
+            // 
+            // label1
+            // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(783, 702);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(158, 13);
+            this.label1.TabIndex = 15;
+            this.label1.Text = "Right Mouse button (RMB) tools";
+            // 
             // BasicCad_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(945, 912);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.label_lmb);
             this.Controls.Add(this.mouseControls);
             this.Controls.Add(this.label_Zoom);
             this.Controls.Add(this.label_Snap);
@@ -602,6 +626,8 @@
         private System.Windows.Forms.ToolStripButton tool_BasicSelect;
         private System.Windows.Forms.ToolStripButton tool_2PDim;
         private System.Windows.Forms.ToolStripButton tool_2PCir;
+        private System.Windows.Forms.Label label_lmb;
+        private System.Windows.Forms.Label label1;
     }
 }
 

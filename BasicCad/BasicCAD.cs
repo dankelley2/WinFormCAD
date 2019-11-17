@@ -7,6 +7,7 @@ using System.IO;
 using CAD;
 using System.Linq;
 using System.Data;
+using System.Drawing.Drawing2D;
 
 namespace BasicCad
 {
@@ -25,51 +26,13 @@ namespace BasicCad
         }
 
         /**********************
-         * INPUT
-         **********************/
-
-        private void Textbox_Input_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                cadSystem.commandHistory.AddToHistory(txt_Input.Text);
-                cadSystem.ParseInput(txt_Input.Text);
-                txt_Input.Clear();
-                treeView_Update();
-
-                e.Handled = true;
-                e.SuppressKeyPress = true;
-                Invalidate();
-                Update();
-            }
-            if (e.KeyCode == Keys.PageUp)
-            {
-                string txt = cadSystem.commandHistory.GetPreviousCommand();
-                if (txt != null)
-                {
-                    txt_Input.Text = txt;
-                    txt_Input.SelectionStart = txt_Input.Text.Length;
-                    txt_Input.SelectionLength = 0;
-                }
-            }
-            if (e.KeyCode == Keys.PageDown)
-            {
-                string txt = cadSystem.commandHistory.GetNextCommand();
-                if (txt != null)
-                {
-                    txt_Input.Text = txt;
-                    txt_Input.SelectionStart = txt_Input.Text.Length;
-                    txt_Input.SelectionLength = 0;
-                }
-            }
-        }
-
-        /**********************
          * FORM EVENTS
          **********************/
 
         private void BasicCad_Load(object sender, EventArgs e)
         {
+            LMBControls.Renderer = new ToolStripButtonRenderer();
+            RMBControls.Renderer = new ToolStripButtonRenderer();
             cadSystem = new CadSystem(new PointF(145, 24), this.Size, .25F, 96);
             ShapeSystem.setBaseColors(
                 new Pen(Color.FromArgb(255, 20, 20, 20), 2),
@@ -202,43 +165,79 @@ namespace BasicCad
                 }
             }
         }
+
         /**********************
          * PAINT
          **********************/
-
         private void BasicCad_Paint(object sender, PaintEventArgs e)
         {
             PointF cursPos = this.PointToClient(Cursor.Position);
-
+            var g = e.Graphics;
             if (global_mousePan != null)
             {
                 PointF fakeOrigin = new PointF(cursPos.X - global_mousePan.start.X, cursPos.Y - global_mousePan.start.Y);
-                cadSystem.gridSystem.DrawOrigin(e.Graphics);
-                cadSystem.gridSystem.DrawGrid(e.Graphics, fakeOrigin);
-                cadSystem.gridSystem.DrawCurs(e.Graphics, fakeOrigin);
-                cadSystem.gridSystem.DrawOrigin(e.Graphics, fakeOrigin);
+                cadSystem.gridSystem.DrawOrigin(g);
+                cadSystem.gridSystem.DrawGrid(g, fakeOrigin);
+                cadSystem.gridSystem.DrawCurs(g, fakeOrigin);
+                cadSystem.gridSystem.DrawOrigin(g, fakeOrigin);
                 //return;
             }
-            e.Graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-            e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Default;
-            e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            cadSystem.gridSystem.DrawGrid(e.Graphics);
-            cadSystem.gridSystem.DrawOrigin(e.Graphics);
-            ShapeSystem.RefreshAll(e.Graphics);
-            cadSystem.gridSystem.DrawSnaps(e.Graphics);
+            g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.Default;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            cadSystem.gridSystem.DrawGrid(g);
+            cadSystem.gridSystem.DrawOrigin(g);
+            ShapeSystem.RefreshAll(g);
+            cadSystem.gridSystem.DrawSnaps(g);
 
             if (cadSystem.clickCache.count() > 0)
             {
-                cadSystem.gridSystem.DrawLineToCursor(e.Graphics, cadSystem.gridSystem.GetCursorReal(), cursPos);
+                cadSystem.gridSystem.DrawLineToCursor(g, cadSystem.gridSystem.GetCursorReal(), cursPos);
             }
-            cadSystem.gridSystem.DrawCurs(e.Graphics);
+            cadSystem.gridSystem.DrawCurs(g);
 
         }
 
         /**********************
          * Control EVENTS
          **********************/
+
+        private void Textbox_Input_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                cadSystem.commandHistory.AddToHistory(txt_Input.Text);
+                cadSystem.ParseInput(txt_Input.Text);
+                txt_Input.Clear();
+                treeView_Update();
+
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                Invalidate();
+                Update();
+            }
+            if (e.KeyCode == Keys.PageUp)
+            {
+                string txt = cadSystem.commandHistory.GetPreviousCommand();
+                if (txt != null)
+                {
+                    txt_Input.Text = txt;
+                    txt_Input.SelectionStart = txt_Input.Text.Length;
+                    txt_Input.SelectionLength = 0;
+                }
+            }
+            if (e.KeyCode == Keys.PageDown)
+            {
+                string txt = cadSystem.commandHistory.GetNextCommand();
+                if (txt != null)
+                {
+                    txt_Input.Text = txt;
+                    txt_Input.SelectionStart = txt_Input.Text.Length;
+                    txt_Input.SelectionLength = 0;
+                }
+            }
+        }
 
         private void BasicCad_Click(object sender, EventArgs e)
         {
@@ -384,6 +383,7 @@ namespace BasicCad
             cadSystem.gridSystem.relativePositioning = prevPositioning;
             treeView_Update();
         }
+
         private void Make2PCir(object sender, EventArgs e)
         {
             bool prevPositioning = cadSystem.gridSystem.relativePositioning;
@@ -402,8 +402,6 @@ namespace BasicCad
         /**********************************
          * OTHER EVENTS
          *********************************/
-
-
         private void BasicCad_ResizeEnd(object sender, EventArgs e)
         {
             cadSystem.gridSystem.resizeGrid(this.Size);
@@ -621,6 +619,7 @@ namespace BasicCad
                 B.Checked = false;
             }
         }
+
         private void uncheckAllLMBTools()
         {
             //CancelCommand(); //Hopefully we don't need to
@@ -677,58 +676,44 @@ namespace BasicCad
             uncheckAllRMBTools();
             tool_2PCir.Checked = !(tool_2PCir.Checked);
         }
+
+        private void tool_AddPt_CheckStateChanged(object sender, EventArgs e)
+        {
+        }
     }
 
-    public class mousePan
+    class ToolStripButtonRenderer : ToolStripProfessionalRenderer
     {
-        public PointF start;
-        PointF delta;
-        public PointF end {
-            set
+        protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
+        {
+            var button = (ToolStripButton)e.Item;
+            e.Graphics.CompositingMode = CompositingMode.SourceOver;
+
+            if (button.Checked)
             {
-                this.delta =
-                    new PointF(value.X - start.X,value.Y - start.Y );
-                ShapeSystem.gridSystem.MoveOriginByDelta_Real(delta);
+                base.OnRenderItemImage(e);
+            }
+            else
+            {
+                base.OnRenderItemImage(e);
+                Rectangle rectangle = new Rectangle(0, 0, e.Item.Size.Width - 1, e.Item.Size.Height - 1);
+                e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(100,100,100,100)), rectangle);
+
             }
         }
-        //GridSystem grid;
-        public mousePan(PointF start)
-        {
-            this.start = start;
-            //this.grid = grid;
-        }
-        public static mousePan mousePanGrid(PointF start)
-        {
-            return new mousePan(start);
-        }
-    }
 
-}
-
-namespace ConsoleRedirection
-{
-    public class TextBoxStreamWriter : TextWriter
-    {
-        TextBox _output = null;
-
-        public TextBoxStreamWriter(TextBox output)
+        protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
         {
-            _output = output;
-        }
-
-        public override void Write(char value)
-        {
-            base.Write(value);
-            _output.AppendText(value.ToString()); // When character data is written, append it to the text box.
-        }
-
-        public override Encoding Encoding
-        {
-            get { return System.Text.Encoding.UTF8; }
+            if (!e.Item.Selected)
+            {
+                base.OnRenderButtonBackground(e);
+            }
+            else
+            {
+                Rectangle rectangle = new Rectangle(0, 0, e.Item.Size.Width - 1, e.Item.Size.Height - 1);
+                e.Graphics.DrawRectangle(new Pen(Color.Firebrick,4), rectangle);
+            }
         }
     }
-}
 
-namespace UTIL
-{
 }

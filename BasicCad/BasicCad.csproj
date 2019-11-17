@@ -52,8 +52,10 @@
     <Compile Include="BasicCAD.Designer.cs">
       <DependentUpon>BasicCAD.cs</DependentUpon>
     </Compile>
+    <Compile Include="mousePan.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextBoxStreamWriter.cs" />
     <EmbeddedResource Include="BasicCAD.resx">
       <DependentUpon>BasicCAD.cs</DependentUpon>
     </EmbeddedResource>
